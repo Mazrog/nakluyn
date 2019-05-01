@@ -1,0 +1,56 @@
+//
+// Created by mazrog on 01/05/19.
+//
+
+#ifndef NAKLUYN_LOGGER_HPP
+#define NAKLUYN_LOGGER_HPP
+
+#include <iostream>
+#include <GL/glew.h>
+#include "spdlog/spdlog.h"
+
+#define gl_error(message, ...) \
+    nak::log::get_error(__FILE__, __LINE__, message, ##__VA_ARGS__)
+
+namespace nak::log {
+
+enum ErrorStatus {
+    GLFW_WINDOW_ERROR   = 0x01
+};
+
+enum class level {
+    INFO,
+    WARNING,
+    ERROR,
+    CRITICAL
+};
+
+
+template<typename... Args>
+void log(level loglevel, char const * fmt, Args &&... args) {
+    switch (loglevel) {
+        case level::INFO:       spdlog::info(fmt, std::forward<Args>(args)...); break;
+        case level::WARNING:    spdlog::warn(fmt, std::forward<Args>(args)...); break;
+        case level::ERROR:      spdlog::error(fmt, std::forward<Args>(args)...); break;
+        case level::CRITICAL:   spdlog::critical(fmt, std::forward<Args>(args)...); break;
+    }
+}
+
+template < typename ... Args >
+void get_error(const char * file, int line, char const * message, Args &&... args) {
+    GLenum err;
+    if((err = glGetError() ) != GLEW_OK){
+        log(
+                level::ERROR,
+                "ENDORA OPENGL ERROR -------- {}\nCalled from {} at line {}\nError ({}): {} -- {}\n",
+                message, file, line, glewGetErrorString(err), gluErrorString(err)
+        );
+        if constexpr (sizeof...(args)) {
+            ((std::cerr << args << " "), ...) << '\n' << std::endl;
+        }
+    }
+}
+
+}
+
+#endif //NAKLUYN_LOGGER_HPP

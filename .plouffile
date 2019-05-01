@@ -1,0 +1,15 @@
+{
+    "name": "nakluyn",
+    "description": "Window and event gestion",
+    "author": "mazrog",
+    "version": "0.1.0",
+    "projects": {
+        "nakluyn": {
+            "type": "library",
+            "tests": true
+        }
+    },
+    "tests": {
+        "doctest": "https://raw.githubusercontent.com/onqtam/doctest/master/doctest/doctest.h"
+    }
+}
