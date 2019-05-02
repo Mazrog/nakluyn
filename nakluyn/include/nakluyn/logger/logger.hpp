@@ -12,6 +12,15 @@
 #define gl_error(message, ...) \
     nak::log::get_error(__FILE__, __LINE__, message, ##__VA_ARGS__)
 
+#ifdef TEST_COMPILE
+namespace spdlog {
+template<typename... Args> void info(char const *, Args && ...) {}
+template<typename... Args> void warn(char const *, Args && ...) {}
+template<typename... Args> void error(char const *, Args && ...) {}
+template<typename... Args> void critical(char const *, Args && ...) {}
+}
+#endif
+
 namespace nak::log {
 
 enum ErrorStatus {

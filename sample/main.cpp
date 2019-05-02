@@ -13,7 +13,9 @@ int main() {
     options.flags = nak::window_flags::DEPTH | nak::window_flags::BLEND;
 
     nak::window_t window = nak::make_window(options);
-    context.glew_init();
+
+
+    nak::window_loop(window);
 
     return 0;
 }

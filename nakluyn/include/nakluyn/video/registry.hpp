@@ -34,6 +34,7 @@ private:
 
 private:
     std::vector<std::shared_ptr<window>>  _windows;
+    std::shared_ptr<window>               _mother_window;
 };
 
 }

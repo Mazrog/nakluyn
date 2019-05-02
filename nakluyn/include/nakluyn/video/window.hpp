@@ -6,11 +6,14 @@
 #define NAKLUYN_WINDOW_HPP
 
 #include <string>
+#include <vector>
 
 struct GLFWwindow;
 
 namespace nak {
 
+struct window;
+using window_t = window *;
 using flag_t = uint64_t;
 
 enum window_flags : flag_t {
@@ -23,18 +26,21 @@ struct window_options {
     std::string title;
     int width;
     int height;
-    flag_t flags;
+    flag_t  flags;
 };
 
 struct window {
     window(window_options options);
     ~window();
 
+    void apply_flags();
+
     GLFWwindow      * glfw_window;
     window_options    win_options;
-};
 
-using window_t = window *;
+    window_t                parent;
+    std::vector<window_t>   children;
+};
 
 }
 
