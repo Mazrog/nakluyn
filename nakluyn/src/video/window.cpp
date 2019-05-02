@@ -37,10 +37,13 @@ window::window(nak::window_options options)
 {
     using namespace nak::log;
 
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
-    glfwWindowHint(GLFW_DEPTH_BITS, 24);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, win_options.opengl_version_major);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, win_options.opengl_version_minor);
     glfwWindowHint(GLFW_DOUBLEBUFFER, 1);
+
+    if (win_options.flags & window_flags::DEPTH) {
+        glfwWindowHint(GLFW_DEPTH_BITS, win_options.depth_bits);    // 24 default value but still explicit
+    }
 
 
     glfw_window = glfwCreateWindow(
