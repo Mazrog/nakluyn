@@ -7,7 +7,7 @@
 
 namespace nak {
 
-window_t make_window(window_options const& options, window_t parent = nullptr);
+window_t make_window(window_options const& options, window_t parent);
 
 void window_loop(window_t window);
 

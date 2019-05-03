@@ -37,6 +37,9 @@ struct window {
     ~window();
 
     void apply_flags();
+    bool should_close() const;
+    void swap() const;
+    void poll_events() const;
 
     GLFWwindow      * glfw_window;
     window_options    win_options;

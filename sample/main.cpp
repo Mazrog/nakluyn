@@ -1,6 +1,4 @@
 #include <iostream>
-#include <chrono>
-#include <thread>
 #include "nakluyn/nakluyn.hpp"
 
 int main() {
@@ -14,7 +12,7 @@ int main() {
     options.opengl_version_major = 4; options.opengl_version_minor = 5;
     options.depth_bits = 24;
 
-    nak::window_t window = nak::make_window(options);
+    nak::window_t window = nak::make_window(options, nullptr);
 
 
     nak::window_loop(window);

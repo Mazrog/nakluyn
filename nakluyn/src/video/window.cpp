@@ -89,4 +89,16 @@ void window::apply_flags() {
     }
 }
 
+bool window::should_close() const {
+    return glfwWindowShouldClose(glfw_window);
+}
+
+void window::swap() const {
+    glfwSwapBuffers(glfw_window);
+}
+
+void window::poll_events() const {
+    glfwPollEvents();
+}
+
 }
