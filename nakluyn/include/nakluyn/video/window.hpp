@@ -7,45 +7,45 @@
 
 #include <string>
 #include <vector>
+#include <memory>
 
 struct GLFWwindow;
 
 namespace nak {
 
+namespace gui { struct guiwindow; }
+
 struct window;
 using window_t = window *;
-using flag_t = uint64_t;
-
-enum window_flags : flag_t {
-    NONE,
-    DEPTH       = 0x01,         // enable depth test
-    BLEND       = 0x02          // enable blending mode
-};
 
 struct window_options {
     std::string title;              // window title
-    flag_t  flags;                  // flags to set some opengl options
     int width;                      // window width, in pixels
     int height;                     // window height, in pixels
     int depth_bits;                 // number of bits for the depth buffer
     short opengl_version_major;     // major version of opengl requested
     short opengl_version_minor;     // minor version of opengl requested
+    bool decorated;                 // if the window has OS border
 };
 
 struct window {
-    window(window_options options);
+    explicit window(window_options options);
     ~window();
 
-    void apply_flags();
-    bool should_close() const;
     void swap() const;
     void poll_events() const;
+
+    // Utilities functions
+    bool should_close() const;
+    void should_close(bool should_close);
 
     GLFWwindow      * glfw_window;
     window_options    win_options;
 
     window_t                parent;
     std::vector<window_t>   children;
+
+    std::unique_ptr<gui::guiwindow>  gui_window;
 };
 
 }

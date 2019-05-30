@@ -24,13 +24,13 @@ context::context() {
 
      glfwSetErrorCallback(glfw_error_callback);
 
-    _hidden_window = glfwCreateWindow(1, 1, "", nullptr, nullptr);
-    if ( !_hidden_window ) {
+    GLFWwindow * hidden_window = glfwCreateWindow(1, 1, "", nullptr, nullptr);
+    if ( !hidden_window ) {
         log::log(level::CRITICAL, "Hidden window creation error");
         std::exit(ErrorStatus::GLFW_WINDOW_ERROR);
     }
 
-    glfwMakeContextCurrent(_hidden_window);
+    glfwMakeContextCurrent(hidden_window);
 
     /* ########################################################## */
     // ############# GLEW PART
@@ -45,7 +45,7 @@ context::context() {
     /* ########################################################## */
 
     glfwMakeContextCurrent(nullptr);
-    glfwDestroyWindow(_hidden_window);
+    glfwDestroyWindow(hidden_window);
 }
 
 context::~context() {

@@ -22,15 +22,13 @@ struct registry {
         _windows.push_back(std::move(window));
     }
 
-private:
-    registry() noexcept = default;
-    ~registry() = default;
-
-    friend class context;
-
     void clear() {
         _windows.clear();
     }
+
+private:
+    registry() noexcept = default;
+    ~registry() = default;
 
 private:
     std::vector<std::shared_ptr<window>>  _windows;

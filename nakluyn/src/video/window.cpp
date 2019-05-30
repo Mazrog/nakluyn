@@ -2,11 +2,11 @@
 // Created by mazrog on 29/04/19.
 //
 #include "nakluyn/logger/logger.hpp"
+#include "nakluyn/nakluyn.hpp"
+#include "nakluyn/gui/gui_window.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-
-#include "nakluyn/nakluyn.hpp"
 
 namespace nak {
 
@@ -24,7 +24,9 @@ void window_loop(window_t window) {
     while (!glfwWindowShouldClose(window->glfw_window)) {
         glfwPollEvents();
 
-
+        if (window->gui_window) {
+            window->gui_window->render();
+        }
 
         glfwSwapBuffers(window->glfw_window);
         std::this_thread::sleep_for(std::chrono::milliseconds(16));
@@ -33,17 +35,16 @@ void window_loop(window_t window) {
 
 window::window(nak::window_options options)
     : win_options(std::move(options)),
-    parent(nullptr)
+    parent(nullptr),
+    gui_window(nullptr)
 {
     using namespace nak::log;
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, win_options.opengl_version_major);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, win_options.opengl_version_minor);
     glfwWindowHint(GLFW_DOUBLEBUFFER, 1);
-
-    if (win_options.flags & window_flags::DEPTH) {
-        glfwWindowHint(GLFW_DEPTH_BITS, win_options.depth_bits);    // 24 default value but still explicit
-    }
+    glfwWindowHint(GLFW_DECORATED, win_options.decorated);
+    glfwWindowHint(GLFW_DEPTH_BITS, win_options.depth_bits);    // 24 default value but still explicit
 
 
     glfw_window = glfwCreateWindow(
@@ -63,7 +64,6 @@ window::window(nak::window_options options)
     glfwMakeContextCurrent(glfw_window);
 
     glfwSwapInterval(1);
-    apply_flags();
 }
 
 window::~window() {
@@ -71,26 +71,12 @@ window::~window() {
     log::log(log::level::INFO, "Window \"{}\" destroyed.", win_options.title);
 }
 
-void window::apply_flags() {
-    using namespace log;
-
-    log::log(level::INFO, "Window options:");
-    if (win_options.flags & window_flags::BLEND) {
-        glEnable(GL_BLEND);
-        gl_error("window::window -> Enabling blending function");
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        gl_error("window::window -> Setting the blend function");
-        log::log(level::INFO, "\tBlend enabled");
-    }
-    if (win_options.flags & window_flags::DEPTH) {
-        glEnable(GL_DEPTH_TEST);
-        gl_error("window::window -> Enabling depth test");
-        log::log(level::INFO, "\tDepth test enabled");
-    }
-}
-
 bool window::should_close() const {
     return glfwWindowShouldClose(glfw_window);
+}
+
+void window::should_close(bool should_close) {
+    glfwSetWindowShouldClose(glfw_window, should_close);
 }
 
 void window::swap() const {

@@ -23,12 +23,10 @@ include_directories(
         ${CMAKE_CURRENT_SOURCE_DIR}/nakluyn/include
 )
 
-include(deps/cotire/cotire.cmake)
-
 
 ###############################################################################
 # Main library
-add_library(${PROJECT_NAME} SHARED
+add_library(${PROJECT_NAME} STATIC
         ${CPP_FILES}
         ${HPP_FILES}
 )
@@ -40,10 +38,8 @@ target_compile_options(${PROJECT_NAME}
 target_compile_definitions(${PROJECT_NAME} PUBLIC GLFW_INCLUDE_NONE)
 
 target_link_libraries(${PROJECT_NAME}
-        PRIVATE glfw OpenGL::OpenGL OpenGL::GLU GLEW::GLEW
+        PRIVATE glfw OpenGL::OpenGL OpenGL::GLU GLEW::GLEW endora
 )
-
-cotire(${PROJECT_NAME})
 
 ###############################################################################
 # Sample executable
