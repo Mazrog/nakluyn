@@ -14,20 +14,12 @@ namespace nak::controller {
 
     namespace helper {
         template < typename T >
-        struct is_function_pointer : std::false_type {};
-
-        template < typename R, typename ... Args >
-        struct is_function_pointer<R (*) (Args...)> : std::true_type {};
-
-        template < typename R, typename ... Args >
-        using pfunc = R (*) (Args ...);
-
-        template < typename T >
         struct extract_params;
 
         template < typename R, typename Ev,  typename ... Args >
         struct extract_params<R (*) (Ev, Args ...)> {
             using type = std::tuple<Args...>;
+            static constexpr size_t value = sizeof...(Args);
         };
     }
 
@@ -55,14 +47,6 @@ namespace nak::controller {
             build(std::forward<Args>(args)...);
         }
 
-        template < typename ... Args >
-        void set_context(Args && ... args) {
-            set_context_impl(std::forward<Args>(args)...);
-        }
-
-        template < typename ... Args >
-        void set_context_impl() {}
-
         void build(Enum init) {
             current_state = init;
         }
@@ -73,9 +57,22 @@ namespace nak::controller {
             build(std::forward<Args>(tail)...);
         }
 
+        template < typename ... Args >    
+        void set_context(Args && ... args) {
+            params = std::make_tuple(std::forward<Args>(args)...);
+        }
+
         void process(event_detail const& event) {
-            Enum res_state = s[static_cast<enum_type_t >(current_state)](event);
-            current_state = res_state;
+            call(static_cast<enum_type_t >(current_state), event);
+        }
+        
+        void call(enum_type_t id, event_detail const& event){
+            call_impl(id, event, std::make_index_sequence<helper::extract_params<Actions>::value>{});
+        }
+        
+        template < size_t ... I >
+        void call_impl(enum_type_t id, event_detail const& event, std::index_sequence<I...>) {
+            current_state = s[id](event, std::get<I>(params)...);
         }
     };
 
