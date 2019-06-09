@@ -38,7 +38,7 @@ enum EventType {
 }
 
 struct event_detail {
-    event_detail() = default;
+    event_detail() {};
 
     events::EventType type;
 
