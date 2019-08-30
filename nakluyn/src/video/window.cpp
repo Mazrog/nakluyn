@@ -31,6 +31,7 @@ void window_loop(window_t window) {
         glfwSwapBuffers(window->glfw_window);
         std::this_thread::sleep_for(std::chrono::milliseconds(16));
     }
+    window->gui_window->close();
 }
 
 window::window(nak::window_options options)

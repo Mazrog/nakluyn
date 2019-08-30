@@ -12,13 +12,14 @@ out vec2 pass_uvs;
 layout (std140, binding = 0) uniform GuiBlock {
     vec2 position;
     vec2 scale;
+    vec3 color;
 };
 
 
 void main() {
-    gl_Position = vec4(quad[gl_VertexID] * scale / 2., 0., 1.);
+    gl_Position = vec4(quad[gl_VertexID] * scale, 0., 1.);
 
-    gl_Position.xy += position + vec2(-1, 1) * (1 - scale / 2.);
+    gl_Position.xy += position + vec2(-1, 1) * (1 - scale);
 
     pass_uvs = vec2(
         (quad[gl_VertexID].x + 1.) / 2.,

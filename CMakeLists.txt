@@ -7,6 +7,13 @@ find_package(glfw3 REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(GLEW REQUIRED)
 
+set_target_properties(glfw PROPERTIES
+        INTERFACE_INCLUDE_DIRECTORIES "C:\\msys64\\mingw64\\include"
+)
+
+include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+link_directories(cmake-build-debug)
+
 file(GLOB CPP_FILES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
         nakluyn/src/*.cpp
         nakluyn/src/*/*.cpp
@@ -32,13 +39,13 @@ add_library(${PROJECT_NAME} STATIC
 )
 
 target_compile_options(${PROJECT_NAME}
-        PRIVATE -Wall -Wextra -pedantic -O2
+        PRIVATE -std=c++17 -Wall -Wextra -pedantic -O2
 )
 
 target_compile_definitions(${PROJECT_NAME} PUBLIC GLFW_INCLUDE_NONE)
 
 target_link_libraries(${PROJECT_NAME}
-        PRIVATE glfw OpenGL::OpenGL OpenGL::GLU GLEW::GLEW endora
+        PUBLIC glfw OpenGL::GL OpenGL::GLU GLEW::GLEW endora
 )
 
 ###############################################################################
@@ -48,7 +55,7 @@ add_executable(${PROJECT_NAME}_sample
 )
 
 target_compile_options(${PROJECT_NAME}_sample
-        PRIVATE -Wall -Wextra -pedantic -O2
+        PRIVATE -std=c++17 -Wall -Wextra -pedantic -O2
 )
 
 target_link_libraries(${PROJECT_NAME}_sample

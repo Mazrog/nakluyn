@@ -9,28 +9,24 @@
 #include <glm/glm.hpp>
 
 #include <nakluyn/gui/structs.hpp>
-#include <nakluyn/gui/painter.hpp>
+#include <nakluyn/gui/renderer.hpp>
+#include <nakluyn/controller/events.hpp>
 
 namespace nak::gui {
 
-template < typename T >
-class gui {
-    using Type = T;
+struct guibase {
+    virtual void fire_event(controller::event_detail const&) = 0;
 
-public:
     std::array<Distance, 2>     position;
     std::array<Distance, 2>     size;
 };
 
-
-
-template < typename T, typename ... Args >
-void setup_gui(nak::window_t window, Args && ... args) {
-    window->gui_window = std::make_unique<T>(window, std::forward<Args>(args)...);
-}
-
-template < typename T >
-void paint(guiwindow *, T &&);
+template < typename Derived >
+struct gui : guibase {
+    void fire_event(controller::event_detail const& detail) final {
+        return static_cast<Derived &>(*this).on(detail);
+    }
+};
 
 }
 

@@ -10,13 +10,21 @@
 namespace nak::gui {
 
 struct button : gui<button> {
+    glm::vec3 color;
 
+    void on(controller::event_detail const& detail);
+    friend void draw(button & btn, guiwindow * window);
 };
 
 struct titlebar : gui<titlebar> {
     titlebar();
     button  minimize;
     button  close;
+
+    glm::vec3 color;
+
+    void on(controller::event_detail const& detail);
+    friend void draw(titlebar & titlebar, guiwindow * window);
 };
 
 }

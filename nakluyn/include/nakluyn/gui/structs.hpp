@@ -7,6 +7,14 @@
 
 namespace nak::gui {
 
+namespace helpers {
+
+inline glm::vec2 pos_from_glfw(float x, float y, glm::vec2 const& win_dim) {
+    return 2.f * (glm::vec2(x, y) / win_dim);
+}
+
+}
+
 namespace literals {
 
 }

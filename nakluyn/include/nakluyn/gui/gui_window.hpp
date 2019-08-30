@@ -6,6 +6,7 @@
 #define NAKLUYN_GUI_WINDOW_HPP
 
 #include <nakluyn/gui/components.hpp>
+#include <nakluyn/controller/events.hpp>
 
 namespace nak::gui {
 
@@ -13,6 +14,8 @@ struct guiwindow {
     guiwindow(window_t window);
 
     virtual void render() = 0;
+    virtual void on(controller::event_detail const&) = 0;
+
     void close();
     void minimize();
 
@@ -21,11 +24,20 @@ struct guiwindow {
 };
 
 struct basewindow : guiwindow {
-    basewindow(window_t window);
-    void render() override;
+    using guiwindow::guiwindow;
+
+    void render() final;
+    void on(controller::event_detail const& detail) final;
 
     titlebar    bar;
 };
+
+
+template < typename T, typename ... Args >
+void setup_gui(nak::window_t window, Args && ... args) {
+    window->gui_window = std::make_unique<T>(window, std::forward<Args>(args)...);
+    window->gui_window->window = window;
+}
 
 }
 

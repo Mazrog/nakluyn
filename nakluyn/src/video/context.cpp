@@ -10,7 +10,7 @@
 namespace nak {
 
 static void glfw_error_callback(int error, char const * message) {
-    log::log(log::level::ERROR, "GLFW error[{}]: {}", error, message);
+    log::log(log::level::_ERROR, "GLFW error[{}]: {}", error, message);
 }
 
 context::context() {

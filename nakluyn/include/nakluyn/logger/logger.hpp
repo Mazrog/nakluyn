@@ -7,6 +7,7 @@
 
 #include <iostream>
 #include <GL/glew.h>
+#define FMT_UDL_TEMPLATE 0
 #include "spdlog/spdlog.h"
 
 #define gl_error(message, ...) \
@@ -30,7 +31,7 @@ enum ErrorStatus {
 enum class level {
     INFO,
     WARNING,
-    ERROR,
+    _ERROR,
     CRITICAL
 };
 
@@ -40,7 +41,7 @@ void log(level loglevel, char const * fmt, Args &&... args) {
     switch (loglevel) {
         case level::INFO:       spdlog::info(fmt, std::forward<Args>(args)...); break;
         case level::WARNING:    spdlog::warn(fmt, std::forward<Args>(args)...); break;
-        case level::ERROR:      spdlog::error(fmt, std::forward<Args>(args)...); break;
+        case level::_ERROR:      spdlog::error(fmt, std::forward<Args>(args)...); break;
         case level::CRITICAL:   spdlog::critical(fmt, std::forward<Args>(args)...); break;
     }
 }
@@ -50,7 +51,7 @@ void get_error(const char * file, int line, char const * message, Args &&... arg
     GLenum err;
     if((err = glGetError() ) != GLEW_OK){
         log(
-                level::ERROR,
+                level::_ERROR,
                 "ENDORA OPENGL ERROR -------- {}\nCalled from {} at line {}\nError ({}): {} -- {}\n",
                 message, file, line, glewGetErrorString(err), gluErrorString(err)
         );
