@@ -6,7 +6,7 @@
 
 namespace nak::gui {
 
-void button::on(const nak::controller::event_detail &) {
+void button::on(const nak::controller::event_detail & evdetail) {
     puts("button on");
 }
 

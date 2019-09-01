@@ -15,10 +15,13 @@
 namespace nak::gui {
 
 struct guibase {
+    using action_t = int;
+
     virtual void fire_event(controller::event_detail const&) = 0;
 
     std::array<Distance, 2>     position;
     std::array<Distance, 2>     size;
+    std::array<action_t, controller::events::EventType::EVENT_COUNT>    actions;
 };
 
 template < typename Derived >

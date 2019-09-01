@@ -8,11 +8,18 @@
 
 namespace nak::gui {
 
-guiwindow::guiwindow(nak::window_t window) : window(window) {
+guiwindow::guiwindow(nak::window_t window)
+    : window(window),
+    gui_prog(Shader{ "nakluyn/include/nakluyn/shaders/gui.vert", GL_VERTEX_SHADER },
+             Shader{ "nakluyn/include/nakluyn/shaders/gui.frag", GL_FRAGMENT_SHADER })
+             {
     glDisable(GL_DEPTH_TEST); endora_error("disable depth test");
     glDisable(GL_CULL_FACE);  endora_error("disable cull face");
     glEnable(GL_BLEND); endora_error("enable blend");
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); endora_error("blend func");
+
+    gui_prog.use();
+    vao.bind();
 }
 
 void guiwindow::close() {

@@ -7,7 +7,7 @@
 
 #include <iostream>
 #include <GL/glew.h>
-#define FMT_UDL_TEMPLATE 0
+// #define FMT_UDL_TEMPLATE 0
 #include "spdlog/spdlog.h"
 
 #define gl_error(message, ...) \

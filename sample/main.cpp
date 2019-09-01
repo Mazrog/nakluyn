@@ -43,15 +43,6 @@ int main() {
                 MainState (*) (event_detail const&, nak::window_t)
                 >;
 
-        Vao              s_vao;
-        ShaderProgram    s_guiprog(
-                Shader{ "nakluyn/include/nakluyn/shaders/gui.vert", GL_VERTEX_SHADER },
-                Shader{ "nakluyn/include/nakluyn/shaders/gui.frag", GL_FRAGMENT_SHADER }
-        );
-
-        s_guiprog.use();
-        s_vao.bind();
-
         EvCtx ev_ctx;
         ev_ctx.setup(MainState::IDLE, idle_action, MainState::IDLE);
         ev_ctx.set_context(window);

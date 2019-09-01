@@ -32,7 +32,9 @@ enum EventType {
 
     MOUSE_MOVE,
     MOUSE_SCROLL,
-    MOUSE_CLICK
+    MOUSE_CLICK,
+
+    EVENT_COUNT
 };
 
 }

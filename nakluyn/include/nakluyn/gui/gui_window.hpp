@@ -7,6 +7,8 @@
 
 #include <nakluyn/gui/components.hpp>
 #include <nakluyn/controller/events.hpp>
+#include <endora/structs/vao.hpp>
+#include <endora/program.hpp>
 
 namespace nak::gui {
 
@@ -21,6 +23,8 @@ struct guiwindow {
 
     window_t    window;
     UniformBlock<ubo::NakGuiVertBlock>    guiVertBlock{UnifBlock::GUIVERT};
+    Vao     vao;
+    ShaderProgram gui_prog;
 };
 
 struct basewindow : guiwindow {
