@@ -36,6 +36,13 @@ namespace nak::controller {
         Enum current_state;
         func_param_t params;
 
+        event_context() = default;
+
+        template < typename ... Args >
+        event_context(Args && ... args) : params(std::forward<Args>(args)...) {
+            static_assert(std::is_same_v<std::tuple<Args...>, func_param_t>, "No matching constructor with this list of argument.");
+        }
+
         template < typename ... Args >
         void setup(Args && ... args) {
             static_assert(
@@ -100,9 +107,40 @@ namespace nak::controller {
     }
 
     template < typename Enum, typename Actions >
+    void mousemove_cb(GLFWwindow *, double xpos, double ypos) {
+        event_detail detail;
+        detail.type = events::MOUSE_MOVE;
+        detail.position = { xpos, ypos };
+
+        auto dispatcher = event_dispatcher<Enum, Actions>::instance().listener;
+        if (dispatcher)
+            dispatcher->process(detail);
+    }
+
+    template < typename Enum, typename Actions >
+    void mouseclick_cb(GLFWwindow *, int button, int action, int mods) {
+        event_detail detail;
+        detail.type = events::MOUSE_CLICK;
+        detail.click.button = button;
+        detail.click.action = action;
+        detail.click.mods = mods;
+
+        auto dispatcher = event_dispatcher<Enum, Actions>::instance().listener;
+        if (dispatcher)
+            dispatcher->process(detail);
+    }
+
+    template < typename Enum, typename Actions >
     void sub_keyboard(window_t win, event_context<Enum, Actions> * listener) {
         event_dispatcher<Enum, Actions>::instance().listener = listener;
         glfwSetKeyCallback(win->glfw_window, key_cb<Enum, Actions>);
+    }
+
+    template < typename Enum, typename Actions >
+    void sub_mouse(window_t win, event_context<Enum, Actions> * listener) {
+        event_dispatcher<Enum, Actions>::instance().listener = listener;
+        glfwSetCursorPosCallback(win->glfw_window, mousemove_cb<Enum, Actions>);
+        glfwSetMouseButtonCallback(win->glfw_window, mouseclick_cb<Enum, Actions>);
     }
 
     template < typename Enum, typename Actions >
