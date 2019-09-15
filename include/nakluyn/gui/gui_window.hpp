@@ -7,13 +7,13 @@
 
 #include <nakluyn/gui/components.hpp>
 #include <nakluyn/controller/events.hpp>
-#include <endora/structs/vao.hpp>
-#include <endora/program.hpp>
+#include <extern/endora.hpp>
 
 namespace nak::gui {
 
 struct guiwindow {
     guiwindow(window_t window);
+    ~guiwindow();
 
     virtual void render() = 0;
     virtual void on(controller::event_detail const&) = 0;
@@ -22,9 +22,9 @@ struct guiwindow {
     void minimize();
 
     window_t    window;
-    UniformBlock<ubo::NakGuiVertBlock>    guiVertBlock{UnifBlock::GUIVERT};
-    Vao     vao;
-    ShaderProgram gui_prog;
+    endora::ecs::UniformBlock<ubo::NakGuiVertBlock>    guiVertBlock{UnifBlock::GUIVERT};
+    endora::ecs::vertex_array_t vao;
+    endora::ecs::program_t      gui_prog;
 };
 
 struct basewindow : guiwindow {

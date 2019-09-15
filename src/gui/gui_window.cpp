@@ -9,17 +9,26 @@
 namespace nak::gui {
 
 guiwindow::guiwindow(nak::window_t window)
-    : window(window),
-    gui_prog(Shader{ "nakluyn/include/nakluyn/shaders/gui.vert", GL_VERTEX_SHADER },
-             Shader{ "nakluyn/include/nakluyn/shaders/gui.frag", GL_FRAGMENT_SHADER })
-             {
+    : window(window) {
+    using namespace endora::ecs;
+    gui_prog = create_program(
+            create_shader(GL_VERTEX_SHADER, "include/nakluyn/shaders/gui.vert"),
+            create_shader(GL_FRAGMENT_SHADER, "include/nakluyn/shaders/gui.frag")
+     );
+    vao = create_vertexarray();
+
     glDisable(GL_DEPTH_TEST); endora_error("disable depth test");
     glDisable(GL_CULL_FACE);  endora_error("disable cull face");
     glEnable(GL_BLEND); endora_error("enable blend");
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); endora_error("blend func");
 
-    gui_prog.use();
-    vao.bind();
+    use_program(gui_prog);
+    bind_vertex_array(vao);
+}
+
+guiwindow::~guiwindow() {
+    endora::ecs::destroy_vertex_array(vao);
+    endora::ecs::destroy_program(gui_prog);
 }
 
 void guiwindow::close() {

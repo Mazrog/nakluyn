@@ -1,5 +1,4 @@
 #include <iostream>
-#include <endora/endora.hpp>
 
 #include <nakluyn/nakluyn.hpp>
 #include <nakluyn/controller/controller.hpp>

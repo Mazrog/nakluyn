@@ -6,11 +6,13 @@
 #define NAKLUYN_RENDERER_HPP
 
 #include <array>
-#include <endora/structs/uniform_block.hpp>
+#include <extern/endora.hpp>
 
 namespace {
-    using _nakgui_unif_block = types_wrapper<glm::vec2, glm::vec2, glm::vec3>;
+    using _nakgui_unif_block = endora::utils::types_wrapper<glm::vec2, glm::vec2, glm::vec3>;
 }
+
+UnifBlock(NakGuiVertBlock, ::_nakgui_unif_block, position, scale, color)
 
 namespace nak::gui {
 
@@ -21,8 +23,6 @@ struct UnifBlock {
         COUNT
     };
 };
-
-UnifBlock(NakGuiVertBlock, _nakgui_unif_block, position, scale, color)
 
 }
 

@@ -7,27 +7,22 @@ find_package(glfw3 REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(GLEW REQUIRED)
 
-set_target_properties(glfw PROPERTIES
-        INTERFACE_INCLUDE_DIRECTORIES "C:\\msys64\\mingw64\\include"
-)
+#set_target_properties(glfw PROPERTIES
+#        INTERFACE_INCLUDE_DIRECTORIES "C:\\msys64\\mingw64\\include"
+#)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 link_directories(cmake-build-debug)
 
 file(GLOB CPP_FILES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
-        nakluyn/src/*.cpp
-        nakluyn/src/*/*.cpp
-)
-
-file(GLOB HPP_FILES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
-        nakluyn/include/nakluyn/*.hpp
-        nakluyn/include/nakluyn/*/*.hpp
+        src/*.cpp
+        src/*/*.cpp
 )
 
 include_directories(
         ${CMAKE_CURRENT_SOURCE_DIR}
-        ${CMAKE_CURRENT_SOURCE_DIR}/deps
-        ${CMAKE_CURRENT_SOURCE_DIR}/nakluyn/include
+        ${CMAKE_CURRENT_SOURCE_DIR}/extern
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
 
@@ -35,7 +30,6 @@ include_directories(
 # Main library
 add_library(${PROJECT_NAME} STATIC
         ${CPP_FILES}
-        ${HPP_FILES}
 )
 
 target_compile_options(${PROJECT_NAME}
@@ -45,8 +39,14 @@ target_compile_options(${PROJECT_NAME}
 target_compile_definitions(${PROJECT_NAME} PUBLIC GLFW_INCLUDE_NONE)
 
 target_link_libraries(${PROJECT_NAME}
-        PUBLIC glfw OpenGL::GL OpenGL::GLU GLEW::GLEW endora
+        PUBLIC glfw OpenGL::GL OpenGL::GLU GLEW::GLEW
 )
+
+file(GLOB public_headers RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
+        include/nakluyn/*.hpp
+        include/nakluyn/*/*.hpp
+)
+set_target_properties(${PROJECT_NAME} PROPERTIES PUBLIC_HEADER "${public_headers}")
 
 ###############################################################################
 # Sample executable

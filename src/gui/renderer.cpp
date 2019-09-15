@@ -3,7 +3,7 @@
 //
 #include <nakluyn/gui/gui_window.hpp>
 #include <GL/glew.h>
-#include <endora/utils.hpp>
+#include <extern/endora.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
 namespace nak::gui {
