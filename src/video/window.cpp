@@ -24,20 +24,14 @@ void window_loop(window_t window) {
     while (!glfwWindowShouldClose(window->glfw_window)) {
         glfwPollEvents();
 
-        if (window->gui_window) {
-            window->gui_window->render();
-        }
-
         glfwSwapBuffers(window->glfw_window);
         std::this_thread::sleep_for(std::chrono::milliseconds(16));
     }
-    window->gui_window->close();
 }
 
 window::window(nak::window_options options)
     : win_options(std::move(options)),
-    parent(nullptr),
-    gui_window(nullptr)
+    parent(nullptr)
 {
     using namespace nak::log;
 

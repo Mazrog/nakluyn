@@ -5,9 +5,11 @@
 #ifndef NAKLUYN_STRUCTS_HPP
 #define NAKLUYN_STRUCTS_HPP
 
+#include <glm/vec2.hpp>
+
 namespace nak::gui {
 
-namespace helpers {
+inline namespace helpers {
 
 inline glm::vec2 pos_from_glfw(float x, float y, glm::vec2 const& win_dim) {
     return 2.f * (glm::vec2(x, y) / win_dim);
@@ -27,9 +29,7 @@ struct Distance {
 
 struct Color {};
 
-struct Caret {
-
-};
+struct Caret {};
 
 }
 

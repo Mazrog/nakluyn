@@ -5,31 +5,44 @@
 #ifndef NAKLUYN_GUI_HPP
 #define NAKLUYN_GUI_HPP
 
-#include <nakluyn/nakluyn.hpp>
-#include <glm/glm.hpp>
+#include <vector>
 
-#include <nakluyn/gui/structs.hpp>
-#include <nakluyn/gui/renderer.hpp>
-#include <nakluyn/controller/events.hpp>
+#include <nakluyn/nakluyn.hpp>
+#include <nakluyn/gui/helper.hpp>
+#include <glm/vec4.hpp>
 
 namespace nak::gui {
+/*
+ * Context for the application
+ */
+struct ngContext {
+    bool initialized;
 
-struct guibase {
-    using action_t = int;
-
-    virtual void fire_event(controller::event_detail const&) = 0;
-
-    std::array<Distance, 2>     position;
-    std::array<Distance, 2>     size;
-    std::array<action_t, controller::events::EventType::EVENT_COUNT>    actions;
 };
 
-template < typename Derived >
-struct gui : guibase {
-    void fire_event(controller::event_detail const& detail) final {
-        return static_cast<Derived &>(*this).on(detail);
-    }
+struct ngDrawCommand {
+    unsigned buffer_offset;
+    unsigned indices_offset;
+    unsigned vertices_count;
 };
+
+using index_t = unsigned short;
+
+struct ngVertex {
+    glm::vec2 pos;
+    glm::vec2 uvs;
+    glm::vec4 color;
+};
+
+struct ngDrawList {
+    std::vector<ngDrawCommand> commands;
+    std::vector<index_t>  indices;
+    std::vector<ngVertex> vertices;
+};
+
+struct ngDrawData {};
+
+struct ngWindow {};
 
 }
 

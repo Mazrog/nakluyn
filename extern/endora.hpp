@@ -225,6 +225,8 @@ inline void create_buffers(buffer_t * buffers, std::size_t n) {
 
 inline void destroy_buffer(buffer_t buffer) { glDeleteBuffers(1, &buffer); endora_error("destroying buffer"); }
 
+inline void destroy_buffers(buffer_t * buffers, std::size_t n) { glDeleteBuffers(n, buffers); endora_error("destroying buffers"); }
+
 inline void bind_buffer(buffer_t buffer, type_t type) { glBindBuffer(type, buffer); endora_error("bind buffer"); }
 
 inline void check_bind_buffer(buffer_t buffer, type_t type) {

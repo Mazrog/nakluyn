@@ -15,7 +15,6 @@ MainState idle_action(nak::controller::event_detail const& detail, nak::window_t
         std::cout << "Cursor at " << x << ", " << y << '\n';
         nak::controller::event_detail evdetail(detail);
         evdetail.position = {x, y};
-        win->gui_window->on(evdetail);
     }
     return MainState::IDLE;
 }
@@ -32,8 +31,6 @@ int main() {
     options.decorated = true;
 
     nak::window_t window = nak::make_window(options, nullptr);
-
-    nak::gui::setup_gui<nak::gui::basewindow>(window);
 
     {
         using namespace nak::controller;

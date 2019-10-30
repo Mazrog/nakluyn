@@ -13,8 +13,6 @@ struct GLFWwindow;
 
 namespace nak {
 
-namespace gui { struct guiwindow; }
-
 struct window;
 using window_t = window *;
 
@@ -44,8 +42,6 @@ struct window {
 
     window_t                parent;
     std::vector<window_t>   children;
-
-    std::unique_ptr<gui::guiwindow>  gui_window;
 };
 
 }
