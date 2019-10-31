@@ -3,7 +3,6 @@
 //
 #include "nakluyn/logger/logger.hpp"
 #include "nakluyn/nakluyn.hpp"
-#include "nakluyn/gui/gui_window.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>

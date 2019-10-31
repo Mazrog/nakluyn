@@ -2,7 +2,6 @@
 
 #include <nakluyn/nakluyn.hpp>
 #include <nakluyn/controller/controller.hpp>
-#include <nakluyn/gui/gui_window.hpp>
 
 enum class MainState {
     IDLE

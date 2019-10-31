@@ -13,12 +13,15 @@
 
 namespace nak::gui {
 /*
- * Context for the application
+ * Some forward declarations
  */
-struct ngContext {
-    bool initialized;
+struct ngContext;
+struct ngDrawCommand;
+struct ngVertex;
+struct ngDrawList;
+struct ngDrawData;
+struct ngWindow;
 
-};
 
 struct ngDrawCommand {
     unsigned buffer_offset;
@@ -38,11 +41,25 @@ struct ngDrawList {
     std::vector<ngDrawCommand> commands;
     std::vector<index_t>  indices;
     std::vector<ngVertex> vertices;
+
+    unsigned current_buffer_offset;
+    unsigned current_indices_offset;
 };
 
-struct ngDrawData {};
+struct ngDrawData {
+    std::vector<ngDrawList> draw_lists;
+};
 
 struct ngWindow {};
+
+/*
+ * Context for the application
+ */
+struct ngContext {
+    bool initialized;
+
+    ngDrawData draw_data;
+};
 
 }
 

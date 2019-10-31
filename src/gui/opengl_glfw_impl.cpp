@@ -23,3 +23,4 @@ nak::gui::glContext::~glContext() {
     destroy_buffers(buffers, BUFFERCOUNT);
     destroy_program(gui_prog);
 }
+
