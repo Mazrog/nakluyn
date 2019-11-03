@@ -4,7 +4,8 @@
 
 #include <nakluyn/gui/opengl_glfw_impl.h>
 
-nak::gui::glContext::glContext() {
+namespace nak::gui {
+glContext::glContext() {
     using namespace endora::ecs;
 
     gui_prog = create_program(
@@ -18,9 +19,15 @@ nak::gui::glContext::glContext() {
     use_program(gui_prog);
 }
 
-nak::gui::glContext::~glContext() {
+glContext::~glContext() {
     using namespace endora::ecs;
     destroy_buffers(buffers, BUFFERCOUNT);
     destroy_program(gui_prog);
 }
 
+
+void render_ngdraw_data(ngDrawData const& draw_data) {
+    for (ngDrawList const& drawlist : draw_data.draw_lists) {}
+}
+
+}

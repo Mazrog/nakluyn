@@ -1,8 +1,9 @@
 //
 // Created by mazrog on 29/04/19.
 //
-#include "nakluyn/logger/logger.hpp"
-#include "nakluyn/nakluyn.hpp"
+#include <nakluyn/logger/logger.hpp>
+#include <nakluyn/nakluyn.hpp>
+#include <nakluyn/gui/opengl_glfw_impl.h>
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -19,12 +20,22 @@ window_t make_window(window_options const& options, window_t parent) {
     return new_window.get();
 }
 
-void window_loop(window_t window) {
+void window_loop(window_t window, gui::gui_render_fn gui_callback) {
     while (!glfwWindowShouldClose(window->glfw_window)) {
         glfwPollEvents();
 
-        glfwSwapBuffers(window->glfw_window);
+        gui_callback();
+
+        int display_w, display_h;
+        glfwGetFramebufferSize(window->glfw_window, &display_w, &display_h);
+        glViewport(0, 0, display_w, display_h);
+        glClearColor(.3, .3, .3, 1.);
+        glClear(GL_COLOR_BUFFER_BIT);
+
+        gui::render_ngdraw_data(gui::g_ngcontext->draw_data);
+
         std::this_thread::sleep_for(std::chrono::milliseconds(16));
+        glfwSwapBuffers(window->glfw_window);
     }
 }
 

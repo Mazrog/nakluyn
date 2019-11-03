@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include <nakluyn/nakluyn.hpp>
 #include <nakluyn/gui/helper.hpp>
 #include <glm/vec4.hpp>
 
@@ -22,6 +21,9 @@ struct ngDrawList;
 struct ngDrawData;
 struct ngWindow;
 
+using gui_render_fn = void (*)();
+
+extern ngContext * g_ngcontext;
 
 struct ngDrawCommand {
     unsigned buffer_offset;

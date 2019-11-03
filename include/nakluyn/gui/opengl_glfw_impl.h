@@ -6,6 +6,7 @@
 #define NAKLUYN_OPENGL_GLFW_IMPL_H
 
 #include <extern/endora.hpp>
+#include <nakluyn/gui/gui.hpp>
 
 namespace {
     using _nakgui_unif_block = endora::utils::types_wrapper<glm::vec2, glm::vec2, glm::vec3>;
@@ -29,7 +30,7 @@ struct glContext {
     ~glContext();
 };
 
-
+void render_ngdraw_data(ngDrawData const& draw_data);
 
 }
 

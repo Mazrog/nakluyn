@@ -42,7 +42,7 @@ target_link_libraries(${PROJECT_NAME}
         PUBLIC glfw OpenGL::GL OpenGL::GLU GLEW::GLEW
 )
 
-file(GLOB public_headers RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
+file(GLOB public_headers RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}/include
         include/nakluyn/*.hpp
         include/nakluyn/*/*.hpp
 )

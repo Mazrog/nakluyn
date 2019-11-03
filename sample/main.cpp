@@ -18,6 +18,10 @@ MainState idle_action(nak::controller::event_detail const& detail, nak::window_t
     return MainState::IDLE;
 }
 
+void render_gui() {
+
+}
+
 int main() {
     nak::context context;
 
@@ -47,7 +51,7 @@ int main() {
         sub_keyboard(window, &ev_ctx);
 
 
-        nak::window_loop(window);
+        nak::window_loop(window, render_gui);
     }
 
     return 0;
