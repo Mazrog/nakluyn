@@ -23,7 +23,7 @@ void render_gui() {
 }
 
 int main() {
-    nak::context context;
+    nak::context context(nak::gui::init_gui);
 
     nak::window_options options;
     options.title = "Nakluyn sample";

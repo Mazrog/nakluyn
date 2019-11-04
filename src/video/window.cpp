@@ -32,7 +32,7 @@ void window_loop(window_t window, gui::gui_render_fn gui_callback) {
         glClearColor(.3, .3, .3, 1.);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        gui::render_ngdraw_data(gui::g_ngcontext->draw_data);
+        gui::render_ngdraw_data(gui::get_draw_data());
 
         std::this_thread::sleep_for(std::chrono::milliseconds(16));
         glfwSwapBuffers(window->glfw_window);

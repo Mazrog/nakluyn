@@ -13,6 +13,9 @@ static void glfw_error_callback(int error, char const * message) {
     log::log(log::level::_ERROR, "GLFW error[{}]: {}", error, message);
 }
 
+/* static */
+std::unique_ptr<gui::ngContext> context::s_gui_context = nullptr;
+
 context::context() {
     using namespace log;
 
@@ -48,10 +51,20 @@ context::context() {
     glfwDestroyWindow(hidden_window);
 }
 
+context::context(nak::gui::init_gui_t) : context() {
+    s_gui_context = std::make_unique<gui::ngContext>();
+    log::log(log::level::INFO, "nakgui: GUI Context created");
+}
+
 context::~context() {
     registry::instance().clear();
     glfwTerminate();
     log::log(log::level::INFO, "GLFW terminated");
+
+    if (s_gui_context) {
+        s_gui_context.reset();
+        log::log(log::level::INFO, "nakgui: GUI Context destroyed");
+    }
 }
 
 }

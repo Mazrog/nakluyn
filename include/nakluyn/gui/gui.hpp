@@ -6,8 +6,7 @@
 #define NAKLUYN_GUI_HPP
 
 #include <vector>
-
-#include <nakluyn/gui/helper.hpp>
+#include <glm/vec2.hpp>
 #include <glm/vec4.hpp>
 
 namespace nak::gui {
@@ -23,7 +22,8 @@ struct ngWindow;
 
 using gui_render_fn = void (*)();
 
-extern ngContext * g_ngcontext;
+struct init_gui_t {};
+inline constexpr init_gui_t init_gui {};
 
 struct ngDrawCommand {
     unsigned buffer_offset;
@@ -62,6 +62,13 @@ struct ngContext {
 
     ngDrawData draw_data;
 };
+
+/*
+ * API
+ */
+
+ngContext * get_context();
+ngDrawData const& get_draw_data();
 
 }
 
