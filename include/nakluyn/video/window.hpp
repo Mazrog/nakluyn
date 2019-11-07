@@ -14,7 +14,6 @@ struct GLFWwindow;
 namespace nak {
 
 struct window;
-using window_t = window *;
 
 struct window_options {
     std::string title;              // window title
@@ -39,9 +38,6 @@ struct window {
 
     GLFWwindow      * glfw_window;
     window_options    win_options;
-
-    window_t                parent;
-    std::vector<window_t>   children;
 };
 
 }

@@ -6,6 +6,7 @@
 #define NAKLUYN_OPENGL_GLFW_IMPL_H
 
 #include <extern/endora.hpp>
+#include <nakluyn/video/window.hpp>
 #include <nakluyn/gui/gui.hpp>
 
 namespace {
@@ -13,11 +14,13 @@ namespace {
 }
 
 namespace nak::gui {
+
+inline namespace impl {
 UnifBlock(NakGuiVertBlock, ::_nakgui_unif_block, position, scale, color)
 
 enum UnifBlock { GUIVERT, COUNT };
 
-struct glContext {
+struct gl_context {
     enum Buffers { DATABUFFER, ELEMENTBUFFER, BUFFERCOUNT };
     endora::ecs::program_t gui_prog;
     endora::ecs::buffer_t buffers[BUFFERCOUNT];
@@ -26,11 +29,33 @@ struct glContext {
     endora::ecs::uniform_t unif_transform, unif_texture;
     endora::ecs::UniformBlock<ubo::NakGuiVertBlock>    guiVertBlock{UnifBlock::GUIVERT};
 
-    glContext();
-    ~glContext();
+    gl_context();
+    ~gl_context();
 };
 
-void render_ngdraw_data(ngDrawData const& draw_data);
+struct glfw_context {
+    nak::window * window;
+
+    glfw_context(nak::window * window);
+};
+
+struct gui_context_impl {
+    gl_context      gl_context;
+    glfw_context    glfw_context;
+
+    explicit gui_context_impl(nak::window * window);
+
+    void setup_mouse_events();
+    void setup_keyboard_events();
+
+    void update_mouse();
+
+    void glfw_new_frame();
+};
+
+void render_ngdraw_data(draw_data const& draw_data);
+
+}
 
 }
 

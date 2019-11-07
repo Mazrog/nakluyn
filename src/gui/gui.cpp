@@ -3,16 +3,59 @@
 //
 #include <nakluyn/gui/gui.hpp>
 #include <nakluyn/video/context.hpp>
+#include <algorithm>
 
 namespace nak::gui {
 
-inline ngContext * get_context() {
+window::window(nak::gui::window::creation_flags flags)
+    : flags(flags),
+    cursor(0.)
+{
+
+}
+
+context::context() {}
+
+context * get_context() {
     return nak::context::s_gui_context.get();
 }
 
-ngDrawData const& get_draw_data() {
-    ngContext * context = get_context();
+draw_data const& get_draw_data() {
+    context * context = get_context();
     return context->draw_data;
 }
+
+void new_frame() {}
+
+//static window_ref find_window_by_id(int window_id) {
+//    context * context = get_context();
+//    auto const& it = std::find(context->windows.begin(),
+//            context->windows.end(),
+//            [window_id] (window const& win) { return win.window_id == window_id; }
+//            );
+//
+//    return (it == context->windows.end()) ? std::nullopt : *it;
+//}
+
+static window * create_new_window(int window_id) {
+    context * context = get_context();
+    window * window = &context->windows.emplace_back();
+    window->window_id = window_id;
+
+    return window;
+}
+
+bool begin(int window_id) {
+    context * context = get_context();
+
+    // window_ref window = find_window_by_id(window_id);
+    // if (!window) {
+//        window = create_new_window(window_id);
+    // }
+}
+
+void end();
+
+bool button() { return true; }
 
 }

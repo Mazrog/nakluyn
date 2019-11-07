@@ -5,7 +5,6 @@
 #include <GLFW/glfw3.h>
 
 #include "nakluyn/video/context.hpp"
-#include "nakluyn/video/registry.hpp"
 
 namespace nak {
 
@@ -14,7 +13,7 @@ static void glfw_error_callback(int error, char const * message) {
 }
 
 /* static */
-std::unique_ptr<gui::ngContext> context::s_gui_context = nullptr;
+std::unique_ptr<gui::context> context::s_gui_context = nullptr;
 
 context::context() {
     using namespace log;
@@ -27,6 +26,7 @@ context::context() {
 
      glfwSetErrorCallback(glfw_error_callback);
 
+    /* Making a dummy window to active glfw context in order to init glew */
     GLFWwindow * hidden_window = glfwCreateWindow(1, 1, "", nullptr, nullptr);
     if ( !hidden_window ) {
         log::log(level::CRITICAL, "Hidden window creation error");
@@ -52,12 +52,11 @@ context::context() {
 }
 
 context::context(nak::gui::init_gui_t) : context() {
-    s_gui_context = std::make_unique<gui::ngContext>();
+    s_gui_context = std::make_unique<gui::context>();
     log::log(log::level::INFO, "nakgui: GUI Context created");
 }
 
 context::~context() {
-    registry::instance().clear();
     glfwTerminate();
     log::log(log::level::INFO, "GLFW terminated");
 

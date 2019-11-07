@@ -10,17 +10,7 @@
 
 namespace nak {
 
-window_t make_window(window_options const& options, window_t parent) {
-    auto new_window = std::make_shared<window>(options);
-    new_window->parent = parent;
-    if (parent) {
-        parent->children.push_back(new_window.get());
-    }
-    registry::instance().register_window(new_window);
-    return new_window.get();
-}
-
-void window_loop(window_t window, gui::gui_render_fn gui_callback) {
+void window_loop(window * window, gui::render_fn gui_callback) {
     while (!glfwWindowShouldClose(window->glfw_window)) {
         glfwPollEvents();
 
@@ -40,8 +30,7 @@ void window_loop(window_t window, gui::gui_render_fn gui_callback) {
 }
 
 window::window(nak::window_options options)
-    : win_options(std::move(options)),
-    parent(nullptr)
+    : win_options(std::move(options))
 {
     using namespace nak::log;
 

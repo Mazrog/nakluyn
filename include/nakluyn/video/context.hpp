@@ -14,8 +14,10 @@ struct context {
     context(gui::init_gui_t);
     ~context();
 
-    static std::unique_ptr<gui::ngContext> s_gui_context;
+    static std::unique_ptr<gui::context> s_gui_context;
 };
+
+
 }
 
 #endif //NAKLUYN_CONTEXT_HPP

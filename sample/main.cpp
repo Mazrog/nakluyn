@@ -2,12 +2,13 @@
 
 #include <nakluyn/nakluyn.hpp>
 #include <nakluyn/controller/controller.hpp>
+#include <nakluyn/gui/opengl_glfw_impl.h>
 
 enum class MainState {
     IDLE
 };
 
-MainState idle_action(nak::controller::event_detail const& detail, nak::window_t win) {
+MainState idle_action(nak::controller::event_detail const& detail, nak::window * win) {
     if (detail.key.action == GLFW_PRESS) {
         double x, y;
         glfwGetCursorPos(win->glfw_window, &x, &y);
@@ -17,6 +18,8 @@ MainState idle_action(nak::controller::event_detail const& detail, nak::window_t
     }
     return MainState::IDLE;
 }
+
+static void events() {}
 
 void render_gui() {
 
@@ -33,25 +36,26 @@ int main() {
     options.depth_bits = 24;
     options.decorated = true;
 
-    nak::window_t window = nak::make_window(options, nullptr);
+    nak::window window(options);
+
+    nak::gui::gui_context_impl impl(&window);
 
     {
         using namespace nak::controller;
         using EvCtx = event_context<
                 MainState,
-                MainState (*) (event_detail const&, nak::window_t)
+                MainState (*) (event_detail const&, nak::window *)
                 >;
 
         EvCtx ev_ctx;
         ev_ctx.setup(MainState::IDLE, idle_action, MainState::IDLE);
-        ev_ctx.set_context(window);
+        ev_ctx.set_context(&window);
 
         // phase de branchement
         // brancher la récéption d'input sur des méthodes de event_context
-        sub_keyboard(window, &ev_ctx);
+        sub_keyboard(&window, &ev_ctx);
 
-
-        nak::window_loop(window, render_gui);
+        nak::window_loop(&window, render_gui);
     }
 
     return 0;

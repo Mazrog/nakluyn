@@ -131,13 +131,13 @@ namespace nak::controller {
     }
 
     template < typename Enum, typename Actions >
-    void sub_keyboard(window_t win, event_context<Enum, Actions> * listener) {
+    void sub_keyboard(window * win, event_context<Enum, Actions> * listener) {
         event_dispatcher<Enum, Actions>::instance().listener = listener;
         glfwSetKeyCallback(win->glfw_window, key_cb<Enum, Actions>);
     }
 
     template < typename Enum, typename Actions >
-    void sub_mouse(window_t win, event_context<Enum, Actions> * listener) {
+    void sub_mouse(window * win, event_context<Enum, Actions> * listener) {
         event_dispatcher<Enum, Actions>::instance().listener = listener;
         glfwSetCursorPosCallback(win->glfw_window, mousemove_cb<Enum, Actions>);
         glfwSetMouseButtonCallback(win->glfw_window, mouseclick_cb<Enum, Actions>);
