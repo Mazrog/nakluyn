@@ -10,11 +10,12 @@
 #include <glm/vec2.hpp>
 #include <glm/vec4.hpp>
 
+#include <nakluyn/controller/io.h>
+
 namespace nak::gui {
 /*
  * Some forward declarations
  */
-struct io;
 struct draw_command;
 struct vertex;
 struct draw_list;
@@ -22,21 +23,10 @@ struct draw_data;
 struct window;
 struct context;
 
-using render_fn = void (*)();
 using index_t = unsigned short;
 
 struct init_gui_t {};
 inline constexpr init_gui_t init_gui {};
-
-struct io {
-    // input
-    glm::vec2 mouse_pos;
-
-    bool want_capture_mouse;    // if the gui app wants the mouse
-    bool want_capture_keyboard; // if the gui app wants the keyboard
-
-    io() : want_capture_mouse(false), want_capture_keyboard(false) {}
-};
 
 struct draw_command {
     unsigned buffer_offset;
@@ -84,7 +74,7 @@ struct context {
     std::vector<window> windows;
     draw_data           draw_data;
 
-    io  io;
+    controller::io  io;
 
     context();
 };
@@ -94,6 +84,7 @@ struct context {
  */
 
 context * get_context();
+controller::io & get_io();
 draw_data const& get_draw_data();
 
 void new_frame();

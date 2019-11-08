@@ -16,6 +16,10 @@ window::window(nak::gui::window::creation_flags flags)
 
 context::context() {}
 
+nak::controller::io & get_io() {
+    return get_context()->io;
+}
+
 context * get_context() {
     return nak::context::s_gui_context.get();
 }
@@ -37,21 +41,22 @@ void new_frame() {}
 //    return (it == context->windows.end()) ? std::nullopt : *it;
 //}
 
-static window * create_new_window(int window_id) {
-    context * context = get_context();
-    window * window = &context->windows.emplace_back();
-    window->window_id = window_id;
+//static window * create_new_window(int window_id) {
+//    context * context = get_context();
+//    window * window = &context->windows.emplace_back();
+//    window->window_id = window_id;
+//
+//    return window;
+//}
 
-    return window;
-}
-
-bool begin(int window_id) {
-    context * context = get_context();
+bool begin(int ) {
+//    context * context = get_context();
 
     // window_ref window = find_window_by_id(window_id);
     // if (!window) {
 //        window = create_new_window(window_id);
     // }
+    return true;
 }
 
 void end();
