@@ -40,8 +40,8 @@ struct glfw_context {
 };
 
 struct gui_context_impl {
-    gl_context      gl_context;
-    glfw_context    glfw_context;
+    impl::gl_context      gl_context;
+    impl::glfw_context    glfw_context;
 
     explicit gui_context_impl(nak::window * window);
 

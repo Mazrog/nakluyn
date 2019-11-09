@@ -8,13 +8,12 @@
 namespace nak::gui {
 
 window::window(nak::gui::window::creation_flags flags)
-    : flags(flags),
-    cursor(0.)
+    : flags(flags)
 {
 
 }
 
-context::context() {}
+context::context() : current_window(nullptr) {}
 
 nak::controller::io & get_io() {
     return get_context()->io;
@@ -31,36 +30,42 @@ draw_data const& get_draw_data() {
 
 void new_frame() {}
 
-//static window_ref find_window_by_id(int window_id) {
-//    context * context = get_context();
-//    auto const& it = std::find(context->windows.begin(),
-//            context->windows.end(),
-//            [window_id] (window const& win) { return win.window_id == window_id; }
-//            );
-//
-//    return (it == context->windows.end()) ? std::nullopt : *it;
-//}
+static window * find_window_by_id(int window_id) {
+    context * context = get_context();
+    auto const& it = std::find_if(context->windows.begin(),
+            context->windows.end(),
+            [window_id] (window const& win) { return win.window_id == window_id; }
+            );
 
-//static window * create_new_window(int window_id) {
-//    context * context = get_context();
-//    window * window = &context->windows.emplace_back();
-//    window->window_id = window_id;
-//
-//    return window;
-//}
+    return (it == context->windows.end()) ? nullptr : &*it;
+}
 
-bool begin(int ) {
-//    context * context = get_context();
+static window * create_new_window(int window_id) {
+    context * context = get_context();
+    window & window = context->windows.emplace_back();
+    window.window_id = window_id;
 
-    // window_ref window = find_window_by_id(window_id);
-    // if (!window) {
-//        window = create_new_window(window_id);
-    // }
+    return &window;
+}
+
+bool begin(int window_id) {
+    context * context = get_context();
+
+     window * window = find_window_by_id(window_id);
+     if (!window) {
+        window = create_new_window(window_id);
+     }
+
     return true;
 }
 
-void end();
+void end() {
 
-bool button() { return true; }
+}
+
+bool button(const char * ) {
+
+    return false;
+}
 
 }

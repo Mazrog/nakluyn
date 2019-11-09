@@ -32,6 +32,8 @@ struct draw_command {
     unsigned buffer_offset;
     unsigned indices_offset;
     unsigned vertices_count;
+
+    glm::vec4   clip_rect;
 };
 
 struct vertex {
@@ -53,6 +55,12 @@ struct draw_data {
     std::vector<draw_list> draw_lists;
 };
 
+struct window_internal {
+    glm::vec2   cursor;
+    glm::vec2   cursor_start;   // begin area with window padding
+    glm::vec2   cursor_max;     // maximum right bottom corner ~ content size
+};
+
 struct window {
     enum creation_flags {
         empty       = 1 << 0,
@@ -64,7 +72,7 @@ struct window {
 
     int window_id;
     creation_flags flags;
-    glm::vec2   cursor;
+    window_internal  temp_data;
 };
 
 /*
@@ -72,7 +80,8 @@ struct window {
  */
 struct context {
     std::vector<window> windows;
-    draw_data           draw_data;
+    window *            current_window;
+    gui::draw_data           draw_data;
 
     controller::io  io;
 
@@ -91,7 +100,8 @@ void new_frame();
 
 bool begin(int window_id);
 void end();
-bool button();
+
+bool button(const char * label);
 
 }
 
