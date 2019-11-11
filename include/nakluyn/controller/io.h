@@ -6,37 +6,51 @@
 #define NAKLUYN_IO_H
 
 #include <string>
+#include <include/nakluyn/video/window.hpp>
+#include <glm/vec2.hpp>
 
 namespace nak::controller {
-using wchar = unsigned short;
 
 enum MouseButton {
     LEFT, RIGHT, MIDDLE,
     MB_COUNT
 };
 
-enum KBModifiers {
-    CTRL, SHIFT, ALT,
-    KBM_COUNT
-};
-
-struct io {
-    // input
+struct mouse_view {
     glm::vec2 mouse_pos;
     bool mouse_down[MouseButton::MB_COUNT];
-    bool keyboard_modifiers[KBModifiers::KBM_COUNT];
+};
+
+enum KBModifiers {
+    SHIFT   = 0x01,
+    CTRL    = 0x02,
+    ALT     = 0x04,
+
+    KBM_MAX
+};
+
+struct keyboard_view {
+    bool keyboard_modifiers[KBModifiers::KBM_MAX];
     bool key_down[512];
 
-    bool want_capture_mouse;    // if the gui app wants the mouse
-    bool want_capture_keyboard; // if the gui app wants the keyboard
-
     std::string characters_queue;   // UTF-8 chars !
-
-    io() : want_capture_mouse(false), want_capture_keyboard(false) {}
 
     void push_char(char c) { characters_queue.push_back(c); }
     void clear_char_queue() { characters_queue.clear(); }
 };
+
+struct io {
+    bool want_capture_mouse;    // if the gui app wants the mouse
+    bool want_capture_keyboard; // if the gui app wants the keyboard
+
+    mouse_view const& mouse();
+    keyboard_view const& keyboard();
+
+    nak::window const& window;
+
+    io(nak::window const& window);
+};
+
 }
 
 #endif //NAKLUYN_IO_H

@@ -15,7 +15,7 @@ window::window(nak::gui::window::creation_flags flags)
 
 context::context() : current_window(nullptr) {}
 
-nak::controller::io & get_io() {
+nak::controller::io * get_io() {
     return get_context()->io;
 }
 
@@ -40,21 +40,23 @@ static window * find_window_by_id(int window_id) {
     return (it == context->windows.end()) ? nullptr : &*it;
 }
 
-static window * create_new_window(int window_id) {
+static window * create_new_window(int window_id, gui::window::creation_flags flags) {
     context * context = get_context();
-    window & window = context->windows.emplace_back();
+    window & window = context->windows.emplace_back(flags);
     window.window_id = window_id;
 
     return &window;
 }
 
-bool begin(int window_id) {
+bool begin(int window_id, gui::window::creation_flags flags) {
     context * context = get_context();
 
      window * window = find_window_by_id(window_id);
      if (!window) {
-        window = create_new_window(window_id);
+        window = create_new_window(window_id, flags);
      }
+
+
 
     return true;
 }

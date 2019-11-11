@@ -57,13 +57,13 @@ context::context(nak::gui::init_gui_t) : context() {
 }
 
 context::~context() {
-    glfwTerminate();
-    log::log(log::level::INFO, "GLFW terminated");
-
     if (s_gui_context) {
         s_gui_context.reset();
         log::log(log::level::INFO, "nakgui: GUI Context destroyed");
     }
+
+    glfwTerminate();
+    log::log(log::level::INFO, "GLFW terminated");
 }
 
 }

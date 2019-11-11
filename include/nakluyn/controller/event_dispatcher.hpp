@@ -118,12 +118,14 @@ namespace nak::controller {
     }
 
     template < typename Enum, typename Actions >
-    void mouseclick_cb(GLFWwindow *, int button, int action, int mods) {
+    void mouseclick_cb(GLFWwindow * window, int button, int action, int mods) {
         event_detail detail;
         detail.type = events::MOUSE_CLICK;
         detail.click.button = button;
         detail.click.action = action;
         detail.click.mods = mods;
+
+        glfwGetCursorPos(window, &detail.click.pos.x, &detail.click.pos.y);
 
         auto dispatcher = event_dispatcher<Enum, Actions>::instance().listener;
         if (dispatcher)

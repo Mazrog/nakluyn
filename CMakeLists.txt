@@ -7,10 +7,6 @@ find_package(glfw3 REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(GLEW REQUIRED)
 
-#set_target_properties(glfw PROPERTIES
-#        INTERFACE_INCLUDE_DIRECTORIES "C:\\msys64\\mingw64\\include"
-#)
-
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 link_directories(cmake-build-debug)
 
@@ -55,7 +51,7 @@ add_executable(${PROJECT_NAME}_sample
 )
 
 target_compile_options(${PROJECT_NAME}_sample
-        PRIVATE -std=c++17 -Wall -Wextra -pedantic -O2
+        PUBLIC -std=c++17 -Wall -Wextra -pedantic -O2
 )
 
 target_link_libraries(${PROJECT_NAME}_sample

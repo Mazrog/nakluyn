@@ -68,7 +68,7 @@ struct window {
         footer      = 1 << 2
     };
 
-    window(window::creation_flags flags = creation_flags::empty);
+    window(window::creation_flags flags);
 
     int window_id;
     creation_flags flags;
@@ -81,9 +81,9 @@ struct window {
 struct context {
     std::vector<window> windows;
     window *            current_window;
-    gui::draw_data           draw_data;
+    gui::draw_data      draw_data;
 
-    controller::io  io;
+    controller::io      * io;
 
     context();
 };
@@ -93,12 +93,12 @@ struct context {
  */
 
 context * get_context();
-controller::io & get_io();
+controller::io * get_io();
 draw_data const& get_draw_data();
 
 void new_frame();
 
-bool begin(int window_id);
+bool begin(int window_id, gui::window::creation_flags flags = gui::window::creation_flags::empty);
 void end();
 
 bool button(const char * label);

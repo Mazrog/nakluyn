@@ -48,8 +48,6 @@ struct gui_context_impl {
     void setup_mouse_events();
     void setup_keyboard_events();
 
-    void update_mouse();
-
     void glfw_new_frame();
 };
 

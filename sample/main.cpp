@@ -1,5 +1,5 @@
 #include <nakluyn/nakluyn.hpp>
-#include <nakluyn/controller/controller.hpp>
+#include <nakluyn/controller/event_dispatcher.hpp>
 #include <nakluyn/gui/opengl_glfw_impl.h>
 #include <functional>
 
@@ -7,7 +7,12 @@
 static void events() {}
 
 void render_gui() {
-
+    namespace ng = nak::gui;
+    if (ng::begin(0)) {
+        if (ng::button("Click me")) {
+            std::cout << "Button clicked!\n";
+        }
+    }
 }
 
 int main() {
@@ -22,8 +27,11 @@ int main() {
     options.decorated = true;
 
     nak::window window(options);
+    nak::controller::io io(window);
 
     nak::gui::gui_context_impl impl(&window);
+    nak::gui::get_context()->io = &io;
+
 
     nak::window_loop(&window, render_gui, std::bind(&nak::gui::gui_context_impl::glfw_new_frame, impl));
 

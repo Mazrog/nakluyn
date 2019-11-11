@@ -24,6 +24,7 @@ struct mouse_pair {
 
 struct mouse_click {
     uint8_t button, action, mods;
+    mouse_pair pos;
 };
 
 enum EventType {
