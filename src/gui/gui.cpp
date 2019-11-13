@@ -8,10 +8,10 @@
 namespace nak::gui {
 
 window::window(nak::gui::window::creation_flags flags)
-    : flags(flags)
-{
-
-}
+    : flags(flags),
+    pos(0),
+    size(0)
+{}
 
 context::context() : current_window(nullptr) {}
 
@@ -45,6 +45,9 @@ static window * create_new_window(int window_id, gui::window::creation_flags fla
     window & window = context->windows.emplace_back(flags);
     window.window_id = window_id;
 
+    window.pos = glm::vec2(100, 100);
+    window.temp_data.cursor_start = window.temp_data.cursor_max = window.pos;
+
     return &window;
 }
 
@@ -52,11 +55,17 @@ bool begin(int window_id, gui::window::creation_flags flags) {
     context * context = get_context();
 
      window * window = find_window_by_id(window_id);
-     if (!window) {
+     bool const window_just_created = !window;
+
+     if (window_just_created) {
         window = create_new_window(window_id, flags);
      }
 
+     context->current_window = window;
 
+     if (!window_just_created) {
+
+     }
 
     return true;
 }

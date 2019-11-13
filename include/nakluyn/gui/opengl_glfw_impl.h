@@ -10,7 +10,7 @@
 #include <nakluyn/gui/gui.hpp>
 
 namespace {
-    using _nakgui_unif_block = endora::utils::types_wrapper<glm::vec2, glm::vec2, glm::vec3>;
+    using _nakgui_unif_block = endora::utils::types_wrapper<glm::vec2, glm::vec2, glm::vec4>;
 }
 
 namespace nak::gui {
@@ -26,8 +26,8 @@ struct gl_context {
     endora::ecs::buffer_t buffers[BUFFERCOUNT];
 
     endora::ecs::texture_t font_texture;
-    endora::ecs::uniform_t unif_transform, unif_texture;
-    endora::ecs::UniformBlock<ubo::NakGuiVertBlock>    guiVertBlock{UnifBlock::GUIVERT};
+    endora::ecs::uniform_t unif_shape, unif_texture;
+    endora::ecs::UniformBlock<ubo::NakGuiVertBlock>    gui_vert_block{UnifBlock::GUIVERT};
 
     gl_context();
     ~gl_context();
@@ -45,13 +45,10 @@ struct gui_context_impl {
 
     explicit gui_context_impl(nak::window * window);
 
-    void setup_mouse_events();
-    void setup_keyboard_events();
+    void new_frame();
 
-    void glfw_new_frame();
+    void render_ngdraw_data(draw_data const& draw_data);
 };
-
-void render_ngdraw_data(draw_data const& draw_data);
 
 }
 

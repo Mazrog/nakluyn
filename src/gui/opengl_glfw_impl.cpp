@@ -15,10 +15,13 @@ gl_context::gl_context() {
             create_shader(GL_FRAGMENT_SHADER, "include/nakluyn/shaders/gui.frag")
     );
     create_buffers(buffers, BUFFERCOUNT);
-    unif_transform = create_uniform(gui_prog, "transform");
+    unif_shape = create_uniform(gui_prog, "shape");
     unif_texture = create_uniform(gui_prog, "gui_texture");
 
     use_program(gui_prog);
+
+    glm::vec4 color(.3, .4, .6, 1.);
+    gui_vert_block.set(ubo::NakGuiVertBlock::fields::color, glm::value_ptr(color));
 }
 
 gl_context::~gl_context() {
@@ -34,15 +37,29 @@ glfw_context::glfw_context(nak::window *window) : window(window) {}
 gui_context_impl::gui_context_impl(nak::window *window) : glfw_context(window) {}
 
 
-void gui_context_impl::setup_mouse_events() {}
+void gui_context_impl::new_frame() {}
 
-void gui_context_impl::setup_keyboard_events() {}
+void gui_context_impl::render_ngdraw_data(draw_data const& ) {
+    using namespace endora::ecs;
 
+    glm::vec2 pos (0, 0),
+        size(120 / 600., 120 / 400.);
 
-void gui_context_impl::glfw_new_frame() {}
+    gl_context.gui_vert_block.set(
+            ubo::NakGuiVertBlock::fields::position,
+            glm::value_ptr(pos)
+            );
 
-void render_ngdraw_data(draw_data const& ) {
-//    for (draw_list const& drawlist : draw_data.draw_lists) {}
+    gl_context.gui_vert_block.set(
+            ubo::NakGuiVertBlock::fields::scale,
+            glm::value_ptr(size)
+    );
+
+    vertex_array_t vao = create_vertexarray();
+    bind_vertex_array(vao);
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+    destroy_vertex_array(vao);
 }
 
 }

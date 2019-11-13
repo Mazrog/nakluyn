@@ -73,6 +73,8 @@ struct window {
     int window_id;
     creation_flags flags;
     window_internal  temp_data;
+    glm::vec2   pos;
+    glm::vec2   size;
 };
 
 /*

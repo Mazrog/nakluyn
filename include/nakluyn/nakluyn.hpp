@@ -14,16 +14,15 @@
 
 namespace nak {
 
-template < typename Func >
+template < typename Impl >
 void window_loop(window * window,
         void (*gui_render_func)(),
-        Func && impl_new_frame_func,
-        void (*impl_render_func)(gui::draw_data const&) = gui::render_ngdraw_data
+        Impl & impl
         ) {
     while (!glfwWindowShouldClose(window->glfw_window)) {
         glfwPollEvents();
 
-        impl_new_frame_func();
+        impl.new_frame();
         gui::new_frame();
 
         gui_render_func();
@@ -34,7 +33,7 @@ void window_loop(window * window,
         glClearColor(.3, .3, .3, 1.);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        impl_render_func(gui::get_draw_data());
+        impl.render_ngdraw_data(gui::get_draw_data());
 
         std::this_thread::sleep_for(std::chrono::milliseconds(16));
         glfwSwapBuffers(window->glfw_window);

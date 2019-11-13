@@ -33,7 +33,7 @@ int main() {
     nak::gui::get_context()->io = &io;
 
 
-    nak::window_loop(&window, render_gui, std::bind(&nak::gui::gui_context_impl::glfw_new_frame, impl));
+    nak::window_loop(&window, render_gui, impl);
 
     return 0;
 }
