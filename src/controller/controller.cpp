@@ -3,6 +3,7 @@
 //
 
 #include <nakluyn/controller/io.h>
+#include <nakluyn/video/window.hpp>
 #include <GLFW/glfw3.h>
 #include <glm/vec2.hpp>
 

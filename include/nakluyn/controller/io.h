@@ -6,8 +6,11 @@
 #define NAKLUYN_IO_H
 
 #include <string>
-#include <include/nakluyn/video/window.hpp>
 #include <glm/vec2.hpp>
+
+namespace nak {
+    struct window;
+}
 
 namespace nak::controller {
 

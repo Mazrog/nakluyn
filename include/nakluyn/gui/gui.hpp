@@ -16,43 +16,25 @@ namespace nak::gui {
 /*
  * Some forward declarations
  */
-struct draw_command;
-struct vertex;
-struct draw_list;
+struct element;
 struct draw_data;
 struct window;
 struct context;
 
-using index_t = unsigned short;
-
+/* Tag value for nakluyn context creation */
 struct init_gui_t {};
 inline constexpr init_gui_t init_gui {};
+/* --------------------- */
 
-struct draw_command {
-    unsigned buffer_offset;
-    unsigned indices_offset;
-    unsigned vertices_count;
-
-    glm::vec4   clip_rect;
-};
-
-struct vertex {
+struct element {
+    // pos and size are in window coordinates
     glm::vec2 pos;
-    glm::vec2 uvs;
+    glm::vec2 size;
     glm::vec4 color;
 };
 
-struct draw_list {
-    std::vector<draw_command> commands;
-    std::vector<index_t>  indices;
-    std::vector<vertex> vertices;
-
-    unsigned current_buffer_offset;
-    unsigned current_indices_offset;
-};
-
 struct draw_data {
-    std::vector<draw_list> draw_lists;
+    std::vector<element> elements;
 };
 
 struct window_internal {

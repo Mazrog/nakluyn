@@ -9,8 +9,10 @@ const vec2 quad[] = vec2[](
 
 out vec2 uv_out;
 out vec4 pass_color;
+flat out int  pass_shape;
 
 layout (std140, binding = 0) uniform GuiBlock {
+    int  shape;
     vec2 position;
     vec2 scale;
     vec4 color;
@@ -25,4 +27,5 @@ void main() {
         (1 - pos.y) / 2.
     );
     pass_color = color;
+    pass_shape = shape;
 }

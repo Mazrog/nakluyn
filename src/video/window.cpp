@@ -2,9 +2,8 @@
 // Created by mazrog on 29/04/19.
 //
 #include <nakluyn/logger/logger.hpp>
-#include <nakluyn/nakluyn.hpp>
-#include <nakluyn/gui/opengl_glfw_impl.h>
-
+#include <nakluyn/video/window.hpp>
+#include <GLFW/glfw3.h>
 
 namespace nak {
 

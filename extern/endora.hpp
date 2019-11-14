@@ -17,6 +17,7 @@
 namespace {
     using glm::vec2;
     using glm::vec3;
+    using glm::vec4;
     using glm::mat4;
 }
 
@@ -72,6 +73,7 @@ template <> constexpr std::size_t padding<float> = 4;
 template <> constexpr std::size_t padding<int> = 4;
 template <> constexpr std::size_t padding<::vec2> = 8;
 template <> constexpr std::size_t padding<::vec3> = 16;
+template <> constexpr std::size_t padding<::vec4> = 16;
 template <> constexpr std::size_t padding<::mat4> = 16;
 
 using Pair = std::pair<size_t, size_t>;

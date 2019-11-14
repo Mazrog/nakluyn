@@ -1,10 +1,5 @@
 #include <nakluyn/nakluyn.hpp>
-#include <nakluyn/controller/event_dispatcher.hpp>
 #include <nakluyn/gui/opengl_glfw_impl.h>
-#include <functional>
-
-
-static void events() {}
 
 void render_gui() {
     namespace ng = nak::gui;

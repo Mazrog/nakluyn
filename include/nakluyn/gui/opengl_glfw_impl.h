@@ -6,17 +6,16 @@
 #define NAKLUYN_OPENGL_GLFW_IMPL_H
 
 #include <extern/endora.hpp>
-#include <nakluyn/video/window.hpp>
 #include <nakluyn/gui/gui.hpp>
 
 namespace {
-    using _nakgui_unif_block = endora::utils::types_wrapper<glm::vec2, glm::vec2, glm::vec4>;
+    using _nakgui_unif_block = endora::utils::types_wrapper<int, glm::vec2, glm::vec2, glm::vec4>;
 }
 
 namespace nak::gui {
 
 inline namespace impl {
-UnifBlock(NakGuiVertBlock, ::_nakgui_unif_block, position, scale, color)
+UnifBlock(NakGuiVertBlock, ::_nakgui_unif_block, shape, position, scale, color)
 
 enum UnifBlock { GUIVERT, COUNT };
 
@@ -26,7 +25,7 @@ struct gl_context {
     endora::ecs::buffer_t buffers[BUFFERCOUNT];
 
     endora::ecs::texture_t font_texture;
-    endora::ecs::uniform_t unif_shape, unif_texture;
+    endora::ecs::uniform_t unif_texture;
     endora::ecs::UniformBlock<ubo::NakGuiVertBlock>    gui_vert_block{UnifBlock::GUIVERT};
 
     gl_context();
@@ -37,6 +36,7 @@ struct glfw_context {
     nak::window * window;
 
     glfw_context(nak::window * window);
+    glm::vec2 aplly_window_scale(glm::vec2 size);
 };
 
 struct gui_context_impl {
