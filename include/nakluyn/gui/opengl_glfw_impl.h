@@ -36,7 +36,8 @@ struct glfw_context {
     nak::window * window;
 
     glfw_context(nak::window * window);
-    glm::vec2 aplly_window_scale(glm::vec2 size);
+    glm::vec2 apply_window_scale(glm::vec2 size);
+    glm::vec2 compute_window_pos(glm::vec2 pos);
 };
 
 struct gui_context_impl {

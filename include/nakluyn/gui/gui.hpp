@@ -27,10 +27,16 @@ inline constexpr init_gui_t init_gui {};
 /* --------------------- */
 
 struct element {
-    // pos and size are in window coordinates
-    glm::vec2 pos;
-    glm::vec2 size;
-    glm::vec4 color;
+    struct shader_block {
+        // pos and size are in window coordinates
+        glm::vec2 pos;
+        glm::vec2 size;
+        glm::vec4 color;
+    };
+
+    shader_block block;
+
+    glm::vec4 clip_rect;
 };
 
 struct draw_data {
@@ -81,6 +87,7 @@ controller::io * get_io();
 draw_data const& get_draw_data();
 
 void new_frame();
+void render();
 
 bool begin(int window_id, gui::window::creation_flags flags = gui::window::creation_flags::empty);
 void end();

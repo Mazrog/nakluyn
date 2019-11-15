@@ -354,7 +354,7 @@ struct UniformBlock {
         std::size_t offset = 0;
 
         for (std::size_t i = 0; i < pack_size; ++i) {
-            auto [ size, alignment ] = utils::helper<typename T::types>::value[i]; // first -> sizeof / second -> alignment
+            auto const [ size, alignment ] = utils::helper<typename T::types>::value[i]; // first -> sizeof / second -> alignment
             const std::size_t ind = std::log2(alignment);
 
             if (block.size & (alignment - 1)) {

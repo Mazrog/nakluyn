@@ -19,24 +19,20 @@ void window_loop(window * window,
         void (*gui_render_func)(),
         Impl & impl
         ) {
-    while (!glfwWindowShouldClose(window->glfw_window)) {
-        glfwPollEvents();
+    while (!window->should_close()) {
+        window->poll_events();
 
         impl.new_frame();
         gui::new_frame();
 
         gui_render_func();
 
-        int display_w, display_h;
-        glfwGetFramebufferSize(window->glfw_window, &display_w, &display_h);
-        glViewport(0, 0, display_w, display_h);
-        glClearColor(.3, .3, .3, 1.);
         glClear(GL_COLOR_BUFFER_BIT);
-
+        gui::render();
         impl.render_ngdraw_data(gui::get_draw_data());
 
         std::this_thread::sleep_for(std::chrono::milliseconds(16));
-        glfwSwapBuffers(window->glfw_window);
+        window->swap();
     }
 }
 

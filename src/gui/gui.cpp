@@ -15,20 +15,20 @@ window::window(nak::gui::window::creation_flags flags)
 
 context::context() : current_window(nullptr) {}
 
-nak::controller::io * get_io() {
-    return get_context()->io;
-}
+nak::controller::io * get_io() { return get_context()->io; }
 
-context * get_context() {
-    return nak::context::s_gui_context.get();
-}
+context * get_context() { return nak::context::s_gui_context.get(); }
 
-draw_data const& get_draw_data() {
+draw_data const& get_draw_data() { return get_context()->draw_data; }
+
+void new_frame() {
     context * context = get_context();
-    return context->draw_data;
+    context->draw_data.elements.clear();
 }
 
-void new_frame() {}
+void render() {
+    // all items are drawn, we construct the final draw_data;
+}
 
 static window * find_window_by_id(int window_id) {
     context * context = get_context();
@@ -64,7 +64,14 @@ bool begin(int window_id, gui::window::creation_flags flags) {
      context->current_window = window;
 
      if (!window_just_created) {
-
+         element el {
+             { window->pos,
+               {120.f, 120.f},
+                {.3, .4, .6, 1.}
+             },
+             { 0, 0, 1000, 1000 }
+         };
+         context->draw_data.elements.push_back(el);
      }
 
     return true;
