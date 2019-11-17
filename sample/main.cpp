@@ -1,5 +1,5 @@
 #include <nakluyn/nakluyn.hpp>
-#include <nakluyn/gui/opengl_glfw_impl.h>
+#include <nakluyn/gui/opengl_glfw_impl.hpp>
 
 void render_gui() {
     namespace ng = nak::gui;
@@ -26,7 +26,6 @@ int main() {
 
     nak::gui::gui_context_impl impl(&window);
     nak::gui::get_context()->io = &io;
-
 
     nak::window_loop(&window, render_gui, impl);
 

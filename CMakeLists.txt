@@ -7,6 +7,8 @@ find_package(glfw3 REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(GLEW REQUIRED)
 
+find_package(Freetype REQUIRED)
+
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 link_directories(cmake-build-debug)
 
@@ -35,7 +37,7 @@ target_compile_options(${PROJECT_NAME}
 target_compile_definitions(${PROJECT_NAME} PUBLIC GLFW_INCLUDE_NONE)
 
 target_link_libraries(${PROJECT_NAME}
-        PUBLIC glfw OpenGL::GL OpenGL::GLU GLEW::GLEW
+        PUBLIC glfw OpenGL::GL OpenGL::GLU GLEW::GLEW Freetype::Freetype
 )
 
 file(GLOB public_headers RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}/include

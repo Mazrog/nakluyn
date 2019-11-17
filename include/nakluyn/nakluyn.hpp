@@ -5,7 +5,7 @@
 #include <nakluyn/video/window.hpp>
 #include <nakluyn/gui/gui.hpp>
 
-#include <nakluyn/gui/opengl_glfw_impl.h>
+#include <nakluyn/gui/opengl_glfw_impl.hpp>
 
 #include <thread>
 #include <chrono>

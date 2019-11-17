@@ -10,7 +10,7 @@
 #include <glm/vec2.hpp>
 #include <glm/vec4.hpp>
 
-#include <nakluyn/controller/io.h>
+#include <nakluyn/controller/io.hpp>
 
 namespace nak::gui {
 /*

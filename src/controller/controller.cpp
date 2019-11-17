@@ -2,7 +2,7 @@
 // Created by mazrog on 10/11/2019.
 //
 
-#include <nakluyn/controller/io.h>
+#include <nakluyn/controller/io.hpp>
 #include <nakluyn/video/window.hpp>
 #include <GLFW/glfw3.h>
 #include <glm/vec2.hpp>

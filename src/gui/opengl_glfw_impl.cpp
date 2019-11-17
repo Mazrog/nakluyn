@@ -2,7 +2,7 @@
 // Created by Maxime.Cabanal-Duvil on 10/30/2019.
 //
 
-#include <nakluyn/gui/opengl_glfw_impl.h>
+#include <nakluyn/gui/opengl_glfw_impl.hpp>
 #include <nakluyn/video/window.hpp>
 
 namespace nak::gui::impl {
