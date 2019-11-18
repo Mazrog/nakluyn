@@ -15,15 +15,24 @@ gl_context::gl_context() {
             create_shader(GL_VERTEX_SHADER, "include/nakluyn/shaders/gui.vert"),
             create_shader(GL_FRAGMENT_SHADER, "include/nakluyn/shaders/gui.frag")
     );
-    create_buffers(buffers, BUFFERCOUNT);
-    unif_texture = create_uniform(gui_prog, "gui_texture");
-
     use_program(gui_prog);
+
+    data_buffer = create_buffer();
+    bind_buffer(data_buffer, GL_ARRAY_BUFFER);
+    format_buffer_index_data(0, 4, GL_FLOAT, 0, (void *) 0);
+
+    unif_texture = create_uniform(gui_prog, "gui_texture");
+    unif_extracolor = create_uniform(gui_prog, "extra_color");
+    send_uniform(unif_texture, texture_slot);
+
+    font_texture = create_texture();
+    bind_texture_slot(font_texture, GL_TEXTURE_2D, texture_slot);
 }
 
 gl_context::~gl_context() {
     using namespace endora::ecs;
-    destroy_buffers(buffers, BUFFERCOUNT);
+    destroy_buffer(data_buffer);
+    destroy_texture(font_texture);
     destroy_program(gui_prog);
 }
 
@@ -55,33 +64,22 @@ void gui_context_impl::render_ngdraw_data(draw_data const& data) {
     vertex_array_t vao = create_vertexarray();
     bind_vertex_array(vao);
 
-    for (element const& el : data.elements) {
-        glm::vec2 const scale = glfw_context.apply_window_scale( el.block.size ),
-            pos = glfw_context.compute_window_pos( el.block.pos );
+    for (auto const& list : data.lists) {
+        std::size_t index = 0;
 
-        int shape = 0;
-        gl_context.gui_vert_block.set(
-                ubo::NakGuiVertBlock::fields::shape,
-                &shape
-        );
+        bind_buffer(gl_context.data_buffer, GL_ARRAY_BUFFER);
+        set_buffer_data(GL_ARRAY_BUFFER, list.buffer.size(), list.buffer.data(), GL_STATIC_DRAW);
 
-        gl_context.gui_vert_block.set(
-                ubo::NakGuiVertBlock::fields::position,
-                glm::value_ptr(pos)
-        );
+        for (auto const& element : list.elements) {
+            glm::vec2 const scale = glfw_context.apply_window_scale(element.block.size);
+            glm::vec4 const vertex = glm::vec4(
+                    glfw_context.compute_window_pos({element.block.vertex.x, element.block.vertex.y}),
+                    glm::vec2(element.block.vertex.z, element.block.vertex.w)
+            );
 
-        gl_context.gui_vert_block.set(
-                ubo::NakGuiVertBlock::fields::scale,
-                glm::value_ptr(scale)
-        );
-
-        gl_context.gui_vert_block.set(
-                ubo::NakGuiVertBlock::fields::color,
-                glm::value_ptr(el.block.color)
-        );
-
-        glScissor(el.clip_rect.x, el.clip_rect.y, el.clip_rect.z, el.clip_rect.w);
-        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+            glScissor(element.clip_rect.x, element.clip_rect.y, element.clip_rect.z, element.clip_rect.w);
+            glDrawArrays(GL_TRIANGLE_STRIP, index, 4);
+        }
     }
 
     destroy_vertex_array(vao);

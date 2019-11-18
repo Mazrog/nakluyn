@@ -29,9 +29,9 @@ inline constexpr init_gui_t init_gui {};
 struct element {
     struct shader_block {
         // pos and size are in window coordinates
-        glm::vec2 pos;
-        glm::vec2 size;
+        glm::vec4 vertex;
         glm::vec4 color;
+        glm::vec2 size;
     };
 
     shader_block block;
@@ -39,8 +39,13 @@ struct element {
     glm::vec4 clip_rect;
 };
 
+struct draw_list {
+    std::vector<element>    elements;
+    std::vector<float>      buffer;
+};
+
 struct draw_data {
-    std::vector<element> elements;
+    std::vector<draw_list> lists;
 };
 
 struct window_internal {

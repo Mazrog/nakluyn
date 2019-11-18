@@ -63,15 +63,15 @@ bool begin(int window_id, gui::window::creation_flags flags) {
 
      context->current_window = window;
 
-     if (!window_just_created) {
-         element el {
-             { window->pos,
-               {120.f, 120.f},
-                {.3, .4, .6, 1.}
-             },
-             { 0, 0, 1000, 1000 }
-         };
-         context->draw_data.elements.push_back(el);
+    if (!window_just_created) {
+        element el {
+                { { window->pos, 0, 0 },
+                        {.3, .4, .6, 1.},
+                        {120.f, 120.f}
+                },
+                { 0, 0, 1000, 1000 }
+        };
+        context->draw_data.elements.push_back(el);
      }
 
     return true;
