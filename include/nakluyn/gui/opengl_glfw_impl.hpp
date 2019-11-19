@@ -18,6 +18,7 @@ inline constexpr int texture_slot = 0;
 
 struct gl_context {
     endora::ecs::program_t gui_prog;
+    endora::ecs::vertex_array_t vertex_array;
     endora::ecs::buffer_t data_buffer;
 
     endora::ecs::texture_t font_texture;
@@ -30,8 +31,6 @@ struct glfw_context {
     nak::window * window;
 
     glfw_context(nak::window * window);
-    glm::vec2 apply_window_scale(glm::vec2 size);
-    glm::vec2 compute_window_pos(glm::vec2 pos);
 };
 
 struct gui_context_impl {

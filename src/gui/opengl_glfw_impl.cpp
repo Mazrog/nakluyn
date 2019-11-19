@@ -17,9 +17,12 @@ gl_context::gl_context() {
     );
     use_program(gui_prog);
 
+    vertex_array = create_vertexarray();
+    bind_vertex_array(vertex_array);
+
     data_buffer = create_buffer();
     bind_buffer(data_buffer, GL_ARRAY_BUFFER);
-    format_buffer_index_data(0, 4, GL_FLOAT, 0, (void *) 0);
+    format_buffer_index_data(0, 4, GL_FLOAT, 0, nullptr);
 
     unif_texture = create_uniform(gui_prog, "gui_texture");
     unif_extracolor = create_uniform(gui_prog, "extra_color");
@@ -32,6 +35,7 @@ gl_context::gl_context() {
 gl_context::~gl_context() {
     using namespace endora::ecs;
     destroy_buffer(data_buffer);
+    destroy_vertex_array(vertex_array);
     destroy_texture(font_texture);
     destroy_program(gui_prog);
 }
@@ -39,50 +43,35 @@ gl_context::~gl_context() {
 /* Setting up GLFW ccontext */
 glfw_context::glfw_context(nak::window *window) : window(window) {}
 
-glm::vec2 glfw_context::apply_window_scale(glm::vec2 size) {
-    glm::vec2 const window_size = glm::vec2(
-            window->win_options.width,
-            window->win_options.height
-    );
-
-    return size / window_size;
-}
-
-glm::vec2 glfw_context::compute_window_pos(glm::vec2 pos) {
-    glm::vec2 const ogl_pos = apply_window_scale(pos) * 2.f;
-    return { ogl_pos.x - 1.f, 1.f - ogl_pos.y };
-}
-
 /* Setting up the gui context custom implementation */
 gui_context_impl::gui_context_impl(nak::window *window) : glfw_context(window) {}
 
 void gui_context_impl::new_frame() {}
 
+void render_quad(gl_context & glctx, base_draw_unit const& base_unit) {
+    endora::ecs::send_uniform(glctx.unif_extracolor, base_unit.color);
+
+    glScissor(base_unit.clip_rect.x, base_unit.clip_rect.y, base_unit.clip_rect.z, base_unit.clip_rect.w);
+    glDrawArrays(GL_TRIANGLE_STRIP, base_unit.buffer_index, 4);
+}
+
+void render_text(gl_context & , text_draw_unit const ) { puts("Text render"); }
+
 void gui_context_impl::render_ngdraw_data(draw_data const& data) {
     using namespace endora::ecs;
 
-    vertex_array_t vao = create_vertexarray();
-    bind_vertex_array(vao);
-
     for (auto const& list : data.lists) {
-        std::size_t index = 0;
-
         bind_buffer(gl_context.data_buffer, GL_ARRAY_BUFFER);
-        set_buffer_data(GL_ARRAY_BUFFER, list.buffer.size(), list.buffer.data(), GL_STATIC_DRAW);
+        set_buffer_data(GL_ARRAY_BUFFER, list.buffer.size() * sizeof(gui::vertex), list.buffer.data(), GL_STATIC_DRAW);
 
-        for (auto const& element : list.elements) {
-            glm::vec2 const scale = glfw_context.apply_window_scale(element.block.size);
-            glm::vec4 const vertex = glm::vec4(
-                    glfw_context.compute_window_pos({element.block.vertex.x, element.block.vertex.y}),
-                    glm::vec2(element.block.vertex.z, element.block.vertex.w)
-            );
-
-            glScissor(element.clip_rect.x, element.clip_rect.y, element.clip_rect.z, element.clip_rect.w);
-            glDrawArrays(GL_TRIANGLE_STRIP, index, 4);
+        for (auto const& unit : list.units) {
+            std::visit(utils::overloaded {
+                [this] (base_draw_unit const& base_unit) { render_quad(gl_context, base_unit); },
+                [this] (text_draw_unit const& text_unit) { render_text(gl_context, text_unit); },
+                },
+                        unit);
         }
     }
-
-    destroy_vertex_array(vao);
 }
 
 }
