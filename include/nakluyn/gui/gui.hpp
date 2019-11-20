@@ -15,6 +15,8 @@
 #include <nakluyn/video/window.hpp>
 #include <array>
 
+#include <nakluyn/gui/style.hpp>
+
 namespace nak::gui {
 namespace utils {
     template<class... Ts> struct overloaded : Ts... { using Ts::operator()...; };

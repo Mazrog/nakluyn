@@ -3,8 +3,16 @@
 //
 #include <nakluyn/gui/gui.hpp>
 #include <nakluyn/video/context.hpp>
+#include <nakluyn/logger/logger.hpp>
 #include <algorithm>
 #include <iostream>
+
+#include <ft2build.h>
+#include FT_FREETYPE_H
+
+namespace {
+    FT_Library font_library;
+}
 
 namespace nak::gui {
 
@@ -14,7 +22,11 @@ window::window(nak::gui::window::creation_flags flags)
     size(0)
 {}
 
-context::context() : current_window(nullptr) {}
+context::context() : current_window(nullptr) {
+    if (FT_Init_FreeType(&font_library)) {
+        log::log(log::level::CRITICAL, "An error occurred during the initialization of FreeType\n");
+    }
+}
 
 base_draw_unit::base_draw_unit(const nak::gui::gui_base &base)
     : buffer_index(0),
