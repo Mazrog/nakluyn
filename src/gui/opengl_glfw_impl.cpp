@@ -40,11 +40,8 @@ gl_context::~gl_context() {
     destroy_program(gui_prog);
 }
 
-/* Setting up GLFW ccontext */
-glfw_context::glfw_context(nak::window *window) : window(window) {}
-
 /* Setting up the gui context custom implementation */
-gui_context_impl::gui_context_impl(nak::window *window) : glfw_context(window) {}
+gui_context_impl::gui_context_impl() {}
 
 void gui_context_impl::new_frame() {}
 
@@ -59,17 +56,19 @@ void render_text(gl_context & , text_draw_unit const ) { puts("Text render"); }
 
 void gui_context_impl::render_ngdraw_data(draw_data const& data) {
     using namespace endora::ecs;
+    bind_vertex_array(gl_context.vertex_array);
 
     for (auto const& list : data.lists) {
         bind_buffer(gl_context.data_buffer, GL_ARRAY_BUFFER);
-        set_buffer_data(GL_ARRAY_BUFFER, list.buffer.size() * sizeof(gui::vertex), list.buffer.data(), GL_STATIC_DRAW);
+        set_buffer_data(GL_ARRAY_BUFFER, list.buffer.size() * sizeof(gui::vertex), list.buffer.data(), GL_DYNAMIC_DRAW);
 
         for (auto const& unit : list.units) {
             std::visit(utils::overloaded {
                 [this] (base_draw_unit const& base_unit) { render_quad(gl_context, base_unit); },
                 [this] (text_draw_unit const& text_unit) { render_text(gl_context, text_unit); },
                 },
-                        unit);
+                unit
+            );
         }
     }
 }

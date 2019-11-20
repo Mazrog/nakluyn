@@ -7,8 +7,6 @@ void render_gui() {
         if (ng::button("Click me")) {
             std::cout << "Button clicked!\n";
         }
-
-        ng::end();
     }
 }
 
@@ -30,7 +28,7 @@ int main() {
     nak::gui::set_io(&io);
     nak::gui::set_window_context(&window);
 
-    nak::gui::gui_context_impl impl(&window);
+    nak::gui::gui_context_impl impl;
 
     nak::window_loop(&window, render_gui, impl);
 

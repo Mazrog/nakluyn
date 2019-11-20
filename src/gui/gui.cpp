@@ -4,6 +4,7 @@
 #include <nakluyn/gui/gui.hpp>
 #include <nakluyn/video/context.hpp>
 #include <algorithm>
+#include <iostream>
 
 namespace nak::gui {
 
@@ -14,6 +15,34 @@ window::window(nak::gui::window::creation_flags flags)
 {}
 
 context::context() : current_window(nullptr) {}
+
+base_draw_unit::base_draw_unit(const nak::gui::gui_base &base)
+    : buffer_index(0),
+    texture_id(base.sprite.texture),
+    color(base.color),
+    clip_rect(0, 0, 1000, 1000)
+{}
+
+text_draw_unit::text_draw_unit(const nak::gui::text &t)
+    : base_draw_unit(t)
+{
+    char const * p = t.content.data();
+    std::size_t cur = 0;
+    std::size_t const size = t.content.size();
+    while (cur < size) {
+        char const c = *(p + cur);
+        unsigned long char_code;
+        if (c & 0x80) {
+            auto const next = *(p + cur + 1);
+            char_code = ((c & 0x03) << 6) | (next & 0x3f);
+            cur += 2;
+        } else {
+            ++cur;
+            char_code = c;
+        }
+        char_codes.push_back(char_code);
+    }
+}
 
 nak::controller::io * get_io() { return get_context()->io; }
 
@@ -56,7 +85,7 @@ static window * create_new_window(int window_id, gui::window::creation_flags fla
     window.window_id = window_id;
 
     window.pos = glm::vec2(20);
-    window.temp_data.cursor_start = window.temp_data.cursor_max = window.pos;
+    window.temp_data.cursor_start = window.temp_data.cursor_max = window.temp_data.cursor = window.pos;
 
     return &window;
 }
@@ -85,12 +114,12 @@ static box compute_box(glm::vec2 const& top_left, glm::vec2 const& bottom_right)
 }
 
 static bool point_in_box(glm::vec2 const& point, box const& b) {
-        float const x1 = b[0].x,
-                y1 = b[0].y,
-                x2 = b[3].x,
-                y2 = b[3].y;
-        return (point.x >= x1 && point.x <= x2) && (point.y >= y1 && point.y <= y2);
-    }
+    float const x1 = b[0].x,
+            y1 = b[0].y,
+            x2 = b[3].x,
+            y2 = b[3].y;
+    return (point.x >= x1 && point.x <= x2) && (point.y >= y1 && point.y <= y2);
+}
 
 
 void new_frame() {
@@ -116,6 +145,17 @@ static gui_base push_window(gui::window const& win) {
     return base;
 }
 
+static void register_base_draw_unit(gui_base const& base, std::size_t buffer_index, draw_list & drawlist) {
+    base_draw_unit drawunit(base);
+    drawunit.buffer_index = buffer_index;
+    for (std::size_t i = 0; i < base.position.size(); ++i) {
+        drawlist.buffer.emplace_back(compute_window_pos(base.position[i]), base.sprite.uvs[i]);
+    }
+    drawlist.units.push_back(std::move(drawunit));
+}
+
+static void register_text_draw_unit(text const& , std::size_t , draw_list &) {}
+
 void render() {
     // all items are drawn, we construct the final draw_data;
     context * ctx = get_context();
@@ -125,40 +165,20 @@ void render() {
         std::size_t buffer_index = 0;
 
         {
+            // we register the window in the draw list
             auto const wbase = push_window(win);
-            base_draw_unit drawunit {
-                    buffer_index,
-                    wbase.sprite.texture,
-                    wbase.color,
-                    glm::vec4(0, 0, 1000, 1000)
-            };
-            drawlist.units.push_back(std::move(drawunit));
-            for (std::size_t i = 0; i < wbase.position.size(); ++i) {
-                drawlist.buffer.emplace_back(compute_window_pos(wbase.position[i]), wbase.sprite.uvs[i]);
-            }
-            buffer_index += 16;
+            register_base_draw_unit(wbase, buffer_index, drawlist);
+            buffer_index += 4;
         }
 
         for (auto const& el: win.temp_data.elements) {
-            draw_unit unit = std::visit(utils::overloaded {
-                [buffer_index, &drawlist] (gui_base const& base) -> draw_unit {
-                    base_draw_unit drawunit {
-                        buffer_index,
-                        base.sprite.texture,
-                        base.color,
-                        glm::vec4(0, 0, 1000, 1000)
-                    };
-                    for (std::size_t i = 0; i < base.position.size(); ++i) {
-                        drawlist.buffer.emplace_back(compute_window_pos(base.position[i]), base.sprite.uvs[i]);
-                    }
-                    return drawunit;
-                    },
-                [] (text const& ) -> draw_unit { return text_draw_unit{}; }
+            std::visit(utils::overloaded {
+                [buffer_index, &drawlist] (gui_base const& base) { return register_base_draw_unit(base, buffer_index, drawlist); },
+                [buffer_index, &drawlist] (text const& t) { return register_text_draw_unit(t, buffer_index, drawlist); }
                 },
-                        el
+                el
             );
-            drawlist.units.push_back(std::move(unit));
-            buffer_index += 16;
+            buffer_index += 4;
         }
 
         drawdata.lists.push_back(std::move(drawlist));
@@ -177,7 +197,6 @@ bool begin(int window_id, gui::window::creation_flags flags) {
 
      context->current_window = window;
      window->size = glm::vec2(120.f);
-     window->pos = glm::vec2(20, 20);
 
     return true;
 }
@@ -209,14 +228,14 @@ bool button(std::string const& label) {
         {.7, .3, .6}
     };
 
-    bool const ret = point_in_box(io->mouse().mouse_pos, btn_box);
-    if (ret) {
-        btn.color.y = .9;
+    bool const hovered = point_in_box(io->mouse().mouse_pos, btn_box);
+    if (hovered) {
+        btn.color.g = .9;
     }
 
     context->current_window->temp_data.elements.push_back(std::move(btn));
 
-    return ret;
+    return hovered;
 }
 
 }

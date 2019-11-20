@@ -27,17 +27,10 @@ struct gl_context {
     ~gl_context();
 };
 
-struct glfw_context {
-    nak::window * window;
-
-    glfw_context(nak::window * window);
-};
-
 struct gui_context_impl {
     impl::gl_context      gl_context;
-    impl::glfw_context    glfw_context;
 
-    explicit gui_context_impl(nak::window * window);
+    explicit gui_context_impl();
 
     void new_frame();
     void render_ngdraw_data(draw_data const& draw_data);

@@ -23,6 +23,8 @@ static void nak_mousebutton_cb(GLFWwindow * win, int button, int action, int) {
 
     if (action == GLFW_PRESS)
         g_mouse.mouse_down[button] = true;
+    if (action == GLFW_RELEASE)
+        g_mouse.mouse_down[button] = false;
 
     double x, y;
     glfwGetCursorPos(win, &x, &y);

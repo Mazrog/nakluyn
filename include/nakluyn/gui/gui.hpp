@@ -46,6 +46,7 @@ struct texture_atlas {};
 
 /* Final draw data */
 struct base_draw_unit {
+    base_draw_unit(gui_base const& base);
     std::size_t buffer_index;
     unsigned  texture_id;
     glm::vec3 color;
@@ -53,6 +54,7 @@ struct base_draw_unit {
 };
 
 struct text_draw_unit : base_draw_unit {
+    text_draw_unit(text const& t);
     std::vector<unsigned long> char_codes;
 };
 
