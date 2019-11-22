@@ -137,7 +137,11 @@ draw_data const& get_draw_data();
 /* window scaling */
 glm::vec2 apply_window_scale(glm::vec2 size);
 glm::vec2 compute_window_pos(glm::vec2 pos);
-/* ------------------------------------------- */
+/* -------------------------------------- */
+
+/* -------------------------------------- */
+
+/* -------------------------------------- */
 
 void new_frame();
 void render();

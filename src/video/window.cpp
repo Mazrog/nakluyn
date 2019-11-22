@@ -26,7 +26,7 @@ window::window(nak::window_options options)
             nullptr,
             nullptr
     );
-#include <nakluyn/logger/logger.hpp> "Creating window \"{}\", size {}x{}", win_options.title, win_options.width, win_options.height);
+    log::log(log::level::INFO, "Creating window \"{}\", size {}x{}", win_options.title, win_options.width, win_options.height);
 
     if ( !glfw_window ) {
         log::log(level::CRITICAL, "Window creation error: window {}", win_options.title);

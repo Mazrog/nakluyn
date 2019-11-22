@@ -6,6 +6,7 @@
 #define NAKLUYN_STRUCTS_HPP
 
 #include <glm/vec2.hpp>
+#include <nakluyn/gui/font.hpp>
 
 namespace nak::gui {
 
@@ -35,23 +36,21 @@ struct padding_t<T, mdefault, mdefault, mdefault> { static constexpr std::array 
 template < macro T, macro L = mdefault, macro B = mdefault, macro R = mdefault >
 constexpr padding_t padding = padding_t<T, L, B, R>{};
 
-struct properties {
-    macro fontsize;
-    std::array<macro, 4> padding;
-};
+
 
 template < typename ... Ts >
 struct style {
-    style() { props.fontsize = 12; props.padding = { 3, 5, 3, 5 }; }
+    style() { fontsize = 12; padding = { 3, 5, 3, 5 }; }
     style(Ts ... styles) : style() { (build(styles), ...); }
 
     template < macro N >
-    void build(font_size_t<N>) { props.fontsize = N; }
+    void build(font_size_t<N>) { fontsize = N; }
 
     template < macro T, macro L, macro B, macro R >
-    void build(padding_t<T, L, B, R>) { props.padding = padding_t<T, L, B, R>::value; }
+    void build(padding_t<T, L, B, R>) { padding = padding_t<T, L, B, R>::value; }
 
-    properties props;
+    macro fontsize;
+    std::array<macro, 4> padding;
 };
 
 
