@@ -10,47 +10,48 @@
 
 namespace nak::gui {
 
-using macro = unsigned short;
-constexpr macro mdefault = -1;
-
 /* Font stuff */
-template < macro N >
-struct font_size_t {};
+template < id > struct font_size_t {};
+template < id N > constexpr font_size_t font_size = font_size_t<N>{};
 
-template < macro N >
-constexpr font_size_t font_size = font_size_t<N>{};
+template < id > struct font_t {};
+template < id Font > constexpr font_t font = font_t<Font>{};
 
+/* ---------------------------------------------------------- */
 /* Padding */
-template < macro T, macro L, macro B, macro R >
+template < id T, id L, id B, id R >
 struct padding_t { static constexpr std::array value = { T, L, B, R }; };
 
-template < macro T, macro LR, macro B >
+template < id T, id LR, id B >
 struct padding_t<T, LR, B, mdefault> { static constexpr std::array value = { T, LR, B, LR }; };
 
-template < macro T, macro L >
+template < id T, id L >
 struct padding_t<T, L, mdefault, mdefault> { static constexpr std::array value = { T, L, T, L }; };
 
-template < macro T >
+template < id T >
 struct padding_t<T, mdefault, mdefault, mdefault> { static constexpr std::array value = { T, T, T, T }; };
 
-template < macro T, macro L = mdefault, macro B = mdefault, macro R = mdefault >
+template < id T, id L = mdefault, id B = mdefault, id R = mdefault >
 constexpr padding_t padding = padding_t<T, L, B, R>{};
 
 
 
-template < typename ... Ts >
 struct style {
     style() { fontsize = 12; padding = { 3, 5, 3, 5 }; }
-    style(Ts ... styles) : style() { (build(styles), ...); }
 
-    template < macro N >
+    template < typename ... Styles >
+    style(Styles &&... styles) : style() {
+        (build(std::forward<Styles>(styles)), ...);
+    }
+
+    template < id N >
     void build(font_size_t<N>) { fontsize = N; }
 
-    template < macro T, macro L, macro B, macro R >
+    template < id T, id L, id B, id R >
     void build(padding_t<T, L, B, R>) { padding = padding_t<T, L, B, R>::value; }
 
-    macro fontsize;
-    std::array<macro, 4> padding;
+    id fontsize;
+    std::array<id, 4> padding;
 };
 
 

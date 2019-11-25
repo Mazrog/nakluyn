@@ -118,6 +118,8 @@ struct context {
     window *            current_window;
     gui::draw_data      draw_data;
 
+    font_atlas  fonts;
+
     controller::io      * io;
     window_options      * options;
 
@@ -139,8 +141,8 @@ glm::vec2 apply_window_scale(glm::vec2 size);
 glm::vec2 compute_window_pos(glm::vec2 pos);
 /* -------------------------------------- */
 
-/* -------------------------------------- */
-
+/* --------------- Styling API ----------- */
+id load_font(std::string_view fontfile);
 /* -------------------------------------- */
 
 void new_frame();

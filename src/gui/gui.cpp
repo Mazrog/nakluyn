@@ -5,13 +5,15 @@
 #include <nakluyn/video/context.hpp>
 #include <nakluyn/logger/logger.hpp>
 #include <algorithm>
-#include <iostream>
-
-#include <ft2build.h>
-#include FT_FREETYPE_H
 
 namespace {
+    namespace ng = nak::gui;
     FT_Library font_library;
+
+    /* ----------------- */
+    ng::style default_style{
+            ng::font_size<14>
+    };
 }
 
 namespace nak::gui {
@@ -25,7 +27,15 @@ window::window(nak::gui::window::creation_flags flags)
 context::context() : current_window(nullptr) {
     if (FT_Init_FreeType(&font_library)) {
         log::log(log::level::CRITICAL, "An error occurred during the initialization of FreeType\n");
+        return;
     }
+
+    FT_Face default_font;
+    if (FT_New_Face(font_library, "fonts/continuum.ttf", 0, &default_font)) {
+        log::log(log::level::CRITICAL, "An error occurred during the creation of the default font\n");
+        return;
+    }
+    fonts.register_font(default_font);
 }
 
 base_draw_unit::base_draw_unit(const nak::gui::gui_base &base)
@@ -133,12 +143,6 @@ static bool point_in_box(glm::vec2 const& point, box const& b) {
     return (point.x >= x1 && point.x <= x2) && (point.y >= y1 && point.y <= y2);
 }
 
-
-void new_frame() {
-    context * context = get_context();
-    context->draw_data.lists.clear();
-}
-
 static gui_base push_window(gui::window const& win) {
     gui_base base {
             compute_window_box(win),
@@ -167,6 +171,22 @@ static void register_base_draw_unit(gui_base const& base, std::size_t buffer_ind
 }
 
 static void register_text_draw_unit(text const& , std::size_t , draw_list &) {}
+
+/* --------------- Styling API ----------- */
+id load_font(std::string_view fontfile) {
+    FT_Face new_face;
+    if (FT_New_Face(font_library, fontfile.data(), 0, &new_face)) {
+        log::log(log::level::_ERROR, "An error occurred creating the font {}\n", fontfile);
+        return mdefault;
+    }
+    return get_context()->fonts.register_font(new_face);
+}
+/* -------------------------------------- */
+
+void new_frame() {
+    context * context = get_context();
+    context->draw_data.lists.clear();
+}
 
 void render() {
     // all items are drawn, we construct the final draw_data;
