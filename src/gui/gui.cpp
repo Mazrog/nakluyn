@@ -18,10 +18,11 @@ namespace {
 
 namespace nak::gui {
 
-window::window(nak::gui::window::creation_flags flags)
+window::window(nak::gui::window::creation_flags flags, style * window_style)
     : flags(flags),
     pos(0),
-    size(0)
+    size(0),
+    window_style(window_style)
 {}
 
 context::context() : current_window(nullptr) {
@@ -46,7 +47,8 @@ base_draw_unit::base_draw_unit(const nak::gui::gui_base &base)
 {}
 
 text_draw_unit::text_draw_unit(const nak::gui::text &t)
-    : base_draw_unit(t)
+    : base_draw_unit(t),
+    fontsize(t.fontsize)
 {
     char const * p = t.content.data();
     std::size_t cur = 0;
@@ -65,6 +67,23 @@ text_draw_unit::text_draw_unit(const nak::gui::text &t)
         char_codes.push_back(char_code);
     }
 }
+
+sprite_info::sprite_info()
+    : uvs{glm::vec2(0, 0), glm::vec2(0, 1), glm::vec2(1, 0), glm::vec2(1, 1)},
+    texture(0)
+{}
+
+gui_base::gui_base(nak::gui::box pos, glm::vec3 color, nak::gui::sprite_info sprite)
+    : position(pos),
+    color(color),
+    sprite(sprite)
+{}
+
+text::text(nak::gui::box pos, glm::vec3 color, nak::gui::sprite_info sprite, std::string_view content, unsigned short fontsize)
+           : gui_base(pos, color, sprite), content(content.data()), fontsize(fontsize)
+{}
+
+/* ---------------------------------------------------------- */
 
 nak::controller::io * get_io() { return get_context()->io; }
 
@@ -87,9 +106,9 @@ glm::vec2 apply_window_scale(glm::vec2 size) {
 }
 
 glm::vec2 compute_window_pos(glm::vec2 pos) {
-        glm::vec2 const ogl_pos = apply_window_scale(pos) * 2.f;
-        return { ogl_pos.x - 1.f, 1.f - ogl_pos.y };
-    }
+    glm::vec2 const ogl_pos = apply_window_scale(pos) * 2.f;
+    return { ogl_pos.x - 1.f, 1.f - ogl_pos.y };
+}
 
 static window * find_window_by_id(int window_id) {
     context * context = get_context();
@@ -144,33 +163,23 @@ static bool point_in_box(glm::vec2 const& point, box const& b) {
 }
 
 static gui_base push_window(gui::window const& win) {
-    gui_base base {
-            compute_window_box(win),
-            {
-                    {
-                            glm::vec2(0, 0),
-                            glm::vec2(0, 1),
-                            glm::vec2(1, 0),
-                            glm::vec2(1, 1)
-                    },
-                    0
-            },
-            {.3, .4, .6}
-    };
-
-    return base;
+    return { compute_window_box(win),glm::vec3(.3, .4, .6),sprite_info{} };
 }
 
-static void register_base_draw_unit(gui_base const& base, std::size_t buffer_index, draw_list & drawlist) {
+static void register_base_draw_unit(gui_base const& base, std::size_t & buffer_index, draw_list & drawlist) {
     base_draw_unit drawunit(base);
     drawunit.buffer_index = buffer_index;
     for (std::size_t i = 0; i < base.position.size(); ++i) {
         drawlist.buffer.emplace_back(compute_window_pos(base.position[i]), base.sprite.uvs[i]);
     }
     drawlist.units.push_back(std::move(drawunit));
+    buffer_index += 4;
 }
 
-static void register_text_draw_unit(text const& , std::size_t , draw_list &) {}
+static void register_text_draw_unit(text const& t, draw_list & drawlist) {
+    text_draw_unit textunit{t};
+    drawlist.units.push_back(std::move(textunit));
+}
 
 /* --------------- Styling API ----------- */
 id load_font(std::string_view fontfile) {
@@ -180,6 +189,20 @@ id load_font(std::string_view fontfile) {
         return mdefault;
     }
     return get_context()->fonts.register_font(new_face);
+}
+
+FT_GlyphSlot load_character(unsigned long charcode) {
+    FT_Face const font = get_context()->fonts;
+    if (FT_Load_Char(font, charcode, FT_LOAD_RENDER)) {
+        log::log(log::level::_ERROR, "Could not load character {}\n", charcode);
+    }
+
+    return font->glyph;
+}
+
+void set_fontsize(unsigned size) {
+    FT_Select_Charmap(get_context()->fonts, FT_ENCODING_UNICODE);
+    FT_Set_Pixel_Sizes(get_context()->fonts, 0, size);
 }
 /* -------------------------------------- */
 
@@ -200,17 +223,15 @@ void render() {
             // we register the window in the draw list
             auto const wbase = push_window(win);
             register_base_draw_unit(wbase, buffer_index, drawlist);
-            buffer_index += 4;
         }
 
         for (auto const& el: win.temp_data.elements) {
             std::visit(utils::overloaded {
-                [buffer_index, &drawlist] (gui_base const& base) { return register_base_draw_unit(base, buffer_index, drawlist); },
-                [buffer_index, &drawlist] (text const& t) { return register_text_draw_unit(t, buffer_index, drawlist); }
+                [&buffer_index, &drawlist] (gui_base const& base) { return register_base_draw_unit(base, buffer_index, drawlist); },
+                [&drawlist] (text const& t) { return register_text_draw_unit(t, drawlist); }
                 },
                 el
             );
-            buffer_index += 4;
         }
 
         drawdata.lists.push_back(std::move(drawlist));
@@ -233,11 +254,9 @@ bool begin(int window_id, gui::window::creation_flags flags) {
     return true;
 }
 
-void end() {
+void end() {}
 
-}
-
-bool button(std::string const& label) {
+bool button(std::string_view label, option_style) {
     context * context = get_context();
     controller::io * const io = get_io();
 
@@ -246,26 +265,15 @@ bool button(std::string const& label) {
         bottom_right = start + glm::vec2(labelsize, 30) + glm::vec2(5, 3);
 
     box btn_box = compute_box(start, bottom_right);
-    gui_base btn {
-        btn_box,
-        {
-                {
-                        glm::vec2(0, 0),
-                        glm::vec2(0, 1),
-                        glm::vec2(1, 0),
-                        glm::vec2(1, 1)
-                },
-                0
-        },
-        {.7, .3, .6}
-    };
+    glm::vec3 button_color(.7, .3, .6);
 
     bool const hovered = point_in_box(io->mouse().mouse_pos, btn_box);
     if (hovered) {
-        btn.color.g = .9;
+        button_color.g = .9;
     }
 
-    context->current_window->temp_data.elements.push_back(std::move(btn));
+    context->current_window->temp_data.elements.emplace_back(gui_base(btn_box, button_color, sprite_info{}));
+    context->current_window->temp_data.elements.emplace_back(text(btn_box, glm::vec3(.2, .3, .4), sprite_info{}, label, 13));
 
     return hovered;
 }

@@ -20,21 +20,29 @@ gl_context::gl_context() {
     vertex_array = create_vertexarray();
     bind_vertex_array(vertex_array);
 
-    data_buffer = create_buffer();
-    bind_buffer(data_buffer, GL_ARRAY_BUFFER);
+    create_buffers(buffers, BUFFERCOUNT);
+    bind_buffer(buffers[DATABUFFER], GL_ARRAY_BUFFER);
     format_buffer_index_data(0, 4, GL_FLOAT, 0, nullptr);
 
-    unif_texture = create_uniform(gui_prog, "gui_texture");
+    bind_buffer(buffers[FONTBUFFER], GL_ARRAY_BUFFER);
+    format_buffer_index_data(0, 4, GL_FLOAT, 0, nullptr);
+
+    unif_texture = create_uniform(gui_prog, "ngtexture");
     unif_extracolor = create_uniform(gui_prog, "extra_color");
     send_uniform(unif_texture, texture_slot);
 
     font_texture = create_texture();
-    bind_texture_slot(font_texture, GL_TEXTURE_2D, texture_slot);
+    bind_texture(font_texture, GL_TEXTURE_2D);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 }
 
 gl_context::~gl_context() {
     using namespace endora::ecs;
-    destroy_buffer(data_buffer);
+    destroy_buffers(buffers, BUFFERCOUNT);
     destroy_vertex_array(vertex_array);
     destroy_texture(font_texture);
     destroy_program(gui_prog);
@@ -46,20 +54,66 @@ gui_context_impl::gui_context_impl() {}
 void gui_context_impl::new_frame() {}
 
 void render_quad(gl_context & glctx, base_draw_unit const& base_unit) {
+    endora::ecs::check_bind_buffer(glctx.buffers[gl_context::Buffers::DATABUFFER], GL_ARRAY_BUFFER);
     endora::ecs::send_uniform(glctx.unif_extracolor, base_unit.color);
 
     glScissor(base_unit.clip_rect.x, base_unit.clip_rect.y, base_unit.clip_rect.z, base_unit.clip_rect.w);
     glDrawArrays(GL_TRIANGLE_STRIP, base_unit.buffer_index, 4);
 }
 
-void render_text(gl_context & , text_draw_unit const ) { puts("Text render"); }
+void render_text(gl_context & glctx, text_draw_unit const& text_unit) {
+    using namespace endora::ecs;
+    check_bind_buffer(glctx.buffers[gl_context::Buffers::FONTBUFFER], GL_ARRAY_BUFFER);
+    send_uniform(glctx.unif_extracolor, text_unit.color);
+    send_uniform(glctx.unif_texture, texture_slot);
+    bind_texture_slot(glctx.font_texture, GL_TEXTURE_2D, texture_slot);
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    set_fontsize(text_unit.fontsize);
+
+    glm::vec2 cur_pos(0.);
+    glm::vec2 const scaling = apply_window_scale(glm::vec2(2.));
+
+    for (auto const& charcode : text_unit.char_codes) {
+        auto const g = load_character(charcode);
+
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RED,
+                     g->bitmap.width,
+                     g->bitmap.rows, 0,
+                     GL_RED, GL_UNSIGNED_BYTE,
+                     g->bitmap.buffer);
+
+        float x2 = cur_pos.x + g->bitmap_left * scaling.x;
+        float y2 = cur_pos.y + g->bitmap_top * scaling.y;
+        float w = g->bitmap.width * scaling.x;
+        float h = g->bitmap.rows * scaling.y;
+
+        GLfloat box[16] = {
+                x2, y2,         0, 0,
+                x2, y2 - h,     0, 1,
+                x2 + w, y2,     1, 0,
+                x2 + w, y2 - h, 1, 1
+        };
+
+        set_buffer_data(GL_ARRAY_BUFFER, sizeof(box), box, GL_DYNAMIC_DRAW);
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+        cur_pos.x += (g->advance.x / 64.f) * scaling.x;
+        cur_pos.y += (g->advance.y / 64.f) * scaling.y;
+    }
+
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+}
 
 void gui_context_impl::render_ngdraw_data(draw_data const& data) {
     using namespace endora::ecs;
     bind_vertex_array(gl_context.vertex_array);
 
     for (auto const& list : data.lists) {
-        bind_buffer(gl_context.data_buffer, GL_ARRAY_BUFFER);
+        bind_buffer(gl_context.buffers[gl_context::Buffers::DATABUFFER], GL_ARRAY_BUFFER);
         set_buffer_data(GL_ARRAY_BUFFER, list.buffer.size() * sizeof(gui::vertex), list.buffer.data(), GL_DYNAMIC_DRAW);
 
         for (auto const& unit : list.units) {

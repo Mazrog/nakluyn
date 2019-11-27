@@ -17,9 +17,10 @@ enum UnifBlock { GUIVERT, COUNT };
 inline constexpr int texture_slot = 0;
 
 struct gl_context {
+    enum Buffers { DATABUFFER, FONTBUFFER, BUFFERCOUNT };
     endora::ecs::program_t gui_prog;
     endora::ecs::vertex_array_t vertex_array;
-    endora::ecs::buffer_t data_buffer;
+    endora::ecs::buffer_t buffers[BUFFERCOUNT];
 
     endora::ecs::texture_t font_texture;
     endora::ecs::uniform_t unif_texture, unif_extracolor;
