@@ -9,5 +9,5 @@ uniform vec3 extra_color;
 
 void main() {
     vec4 t = texture(ngtexture, uvs);
-    frag_color = vec4(mix(extra_color, t.xyz, t.r), t.r);
+    frag_color = vec4(extra_color * t.rgb, t.a);
 }

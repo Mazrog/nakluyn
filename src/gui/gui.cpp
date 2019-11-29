@@ -233,7 +233,6 @@ void render() {
                 el
             );
         }
-
         drawdata.lists.push_back(std::move(drawlist));
     }
 }
@@ -273,7 +272,7 @@ bool button(std::string_view label, option_style) {
     }
 
     context->current_window->temp_data.elements.emplace_back(gui_base(btn_box, button_color, sprite_info{}));
-    context->current_window->temp_data.elements.emplace_back(text(btn_box, glm::vec3(.2, .3, .4), sprite_info{}, label, 13));
+    context->current_window->temp_data.elements.emplace_back(text(btn_box, glm::vec3(.2, .9, .4), sprite_info{}, label, 13));
 
     return hovered;
 }

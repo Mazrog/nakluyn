@@ -17,12 +17,15 @@ gl_context::gl_context() {
     );
     use_program(gui_prog);
 
-    vertex_array = create_vertexarray();
-    bind_vertex_array(vertex_array);
+    data_vao = create_vertexarray();
+    bind_vertex_array(data_vao);
 
     create_buffers(buffers, BUFFERCOUNT);
     bind_buffer(buffers[DATABUFFER], GL_ARRAY_BUFFER);
     format_buffer_index_data(0, 4, GL_FLOAT, 0, nullptr);
+
+    font_vao = create_vertexarray();
+    bind_vertex_array(font_vao);
 
     bind_buffer(buffers[FONTBUFFER], GL_ARRAY_BUFFER);
     format_buffer_index_data(0, 4, GL_FLOAT, 0, nullptr);
@@ -35,15 +38,20 @@ gl_context::gl_context() {
     bind_texture(font_texture, GL_TEXTURE_2D);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+    white = create_texture();
+    bind_texture(white, GL_TEXTURE_2D);
+    float wh[] = { 1.f, 1.f, 1.f, 1.f };
+    load_2D_surface(GL_TEXTURE_2D, 1, 1, wh, GL_RGBA, GL_RGBA, GL_FLOAT);
 }
 
 gl_context::~gl_context() {
     using namespace endora::ecs;
     destroy_buffers(buffers, BUFFERCOUNT);
-    destroy_vertex_array(vertex_array);
+    destroy_vertex_array(data_vao);
+    destroy_vertex_array(font_vao);
     destroy_texture(font_texture);
     destroy_program(gui_prog);
 }
@@ -54,8 +62,11 @@ gui_context_impl::gui_context_impl() {}
 void gui_context_impl::new_frame() {}
 
 void render_quad(gl_context & glctx, base_draw_unit const& base_unit) {
-    endora::ecs::check_bind_buffer(glctx.buffers[gl_context::Buffers::DATABUFFER], GL_ARRAY_BUFFER);
-    endora::ecs::send_uniform(glctx.unif_extracolor, base_unit.color);
+    using namespace endora::ecs;
+    bind_vertex_array(glctx.data_vao);
+    check_bind_buffer(glctx.buffers[gl_context::Buffers::DATABUFFER], GL_ARRAY_BUFFER);
+    send_uniform(glctx.unif_extracolor, base_unit.color);
+    bind_texture(glctx.white, GL_TEXTURE_2D);
 
     glScissor(base_unit.clip_rect.x, base_unit.clip_rect.y, base_unit.clip_rect.z, base_unit.clip_rect.w);
     glDrawArrays(GL_TRIANGLE_STRIP, base_unit.buffer_index, 4);
@@ -63,28 +74,25 @@ void render_quad(gl_context & glctx, base_draw_unit const& base_unit) {
 
 void render_text(gl_context & glctx, text_draw_unit const& text_unit) {
     using namespace endora::ecs;
+    bind_vertex_array(glctx.font_vao);
     check_bind_buffer(glctx.buffers[gl_context::Buffers::FONTBUFFER], GL_ARRAY_BUFFER);
     send_uniform(glctx.unif_extracolor, text_unit.color);
-    send_uniform(glctx.unif_texture, texture_slot);
-    bind_texture_slot(glctx.font_texture, GL_TEXTURE_2D, texture_slot);
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+    bind_texture(glctx.font_texture, GL_TEXTURE_2D);
 
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glScissor(text_unit.clip_rect.x, text_unit.clip_rect.y, text_unit.clip_rect.z, text_unit.clip_rect.w);
 
-    set_fontsize(text_unit.fontsize);
+    set_fontsize(13);
 
     glm::vec2 cur_pos(0.);
     glm::vec2 const scaling = apply_window_scale(glm::vec2(2.));
 
     for (auto const& charcode : text_unit.char_codes) {
         auto const g = load_character(charcode);
-
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RED,
-                     g->bitmap.width,
-                     g->bitmap.rows, 0,
-                     GL_RED, GL_UNSIGNED_BYTE,
-                     g->bitmap.buffer);
+        load_2D_surface(GL_TEXTURE_2D, g->bitmap.width, g->bitmap.rows, g->bitmap.buffer,
+                        GL_RED, GL_RED, GL_UNSIGNED_BYTE);
 
         float x2 = cur_pos.x + g->bitmap_left * scaling.x;
         float y2 = cur_pos.y + g->bitmap_top * scaling.y;
@@ -110,7 +118,7 @@ void render_text(gl_context & glctx, text_draw_unit const& text_unit) {
 
 void gui_context_impl::render_ngdraw_data(draw_data const& data) {
     using namespace endora::ecs;
-    bind_vertex_array(gl_context.vertex_array);
+    bind_vertex_array(gl_context.data_vao);
 
     for (auto const& list : data.lists) {
         bind_buffer(gl_context.buffers[gl_context::Buffers::DATABUFFER], GL_ARRAY_BUFFER);
