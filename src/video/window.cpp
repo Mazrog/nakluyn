@@ -58,5 +58,4 @@ void window::swap() const {
 void window::poll_events() const {
     glfwPollEvents();
 }
-
 }

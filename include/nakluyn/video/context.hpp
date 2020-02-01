@@ -6,15 +6,11 @@
 #define NAKLUYN_CONTEXT_HPP
 
 #include <memory>
-#include <nakluyn/gui/gui.hpp>
 
 namespace nak {
 struct context {
     context();
-    context(gui::init_gui_t);
     ~context();
-
-    static std::unique_ptr<gui::context> s_gui_context;
 };
 
 

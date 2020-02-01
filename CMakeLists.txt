@@ -36,6 +36,8 @@ target_compile_options(${PROJECT_NAME}
 
 target_compile_definitions(${PROJECT_NAME} PUBLIC GLFW_INCLUDE_NONE)
 
+target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+
 target_link_libraries(${PROJECT_NAME}
         PUBLIC glfw OpenGL::GL OpenGL::GLU GLEW::GLEW Freetype::Freetype
 )

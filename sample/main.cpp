@@ -1,17 +1,11 @@
 #include <nakluyn/nakluyn.hpp>
-#include <nakluyn/gui/opengl_glfw_impl.hpp>
 
-void render_gui() {
-    namespace ng = nak::gui;
-    if (ng::begin(0)) {
-        if (ng::button("Click me")) {
-            std::cout << "Button clicked!\n";
-        }
-    }
-}
+#include <GL/glew.h>
+#include <thread>
+#include <chrono>
 
 int main() {
-    nak::context context(nak::gui::init_gui);
+    nak::context context;
 
     nak::window_options options{
             "Nakluyn sample",
@@ -23,14 +17,15 @@ int main() {
     };
 
     nak::window window(options);
-    nak::controller::io io(window);
 
-    nak::gui::set_io(&io);
-    nak::gui::set_window_context(&window);
+    while (!window.should_close()) {
+        window.poll_events();
 
-    nak::gui::gui_context_impl impl;
+        glClear(GL_COLOR_BUFFER_BIT);
 
-    nak::window_loop(&window, render_gui, impl);
+        std::this_thread::sleep_for(std::chrono::milliseconds(16));
+        window.swap();
+    }
 
     return 0;
 }
